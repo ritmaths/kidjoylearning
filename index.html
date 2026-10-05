@@ -1,994 +1,837 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Fun Learn</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #fef3c7 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .font-fredoka { font-family: 'Fredoka', cursive, sans-serif; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Fun Learn</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     
-    .tab-scrollbar::-webkit-scrollbar { height: 6px; }
-    .tab-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-    .tab-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    .tab-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif']
+                    },
+                    colors: {
+                        funYellow: '#FFD166',
+                        funGreen: '#06D6A0',
+                        funBlue: '#118AB2',
+                        funPink: '#EF476F',
+                        funPurple: '#073B4C'
+                    }
+                }
+            }
+        }
+    </script>
 
-    @keyframes pop {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #F8F9FA;
+            user-select: none;
+        }
+        
+        .tab-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .tab-scroll::-webkit-scrollbar-thumb {
+            background-color: #CBD5E1;
+            border-radius: 9999px;
+        }
 
-    .block-unit {
-      width: 100%;
-      height: 14px;
-      margin-vertical: 1px;
-      border-radius: 3px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.1);
-    }
-  </style>
+        /* Module 5: Place Value Stack */
+        .block-stack {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            min-height: 180px;
+            justify-content: flex-start;
+        }
+
+        .unit-cube {
+            width: 24px;
+            height: 24px;
+            background: #EF476F;
+            border: 2px solid #b82b4b;
+            border-radius: 4px;
+            margin: 1px 0;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .ten-rod {
+            width: 32px;
+            height: 20px;
+            background: #FFD166;
+            border: 2px solid #d4a02c;
+            border-radius: 4px;
+            margin: 1px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #523f00;
+        }
+
+        .hundred-flat {
+            width: 48px;
+            height: 18px;
+            background: #06D6A0;
+            border: 2px solid #048c69;
+            border-radius: 4px;
+            margin: 1px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #02382a;
+        }
+
+        .thousand-cube {
+            width: 60px;
+            height: 20px;
+            background: #118AB2;
+            border: 2px solid #0a526b;
+            border-radius: 4px;
+            margin: 1px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* Custom Bounce Animation for Stars */
+        @keyframes popStar {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .pop-star {
+            animation: popStar 0.4s ease-out;
+        }
+    </style>
 </head>
-<body class="text-slate-800 flex flex-col justify-between min-h-screen">
+<body class="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-800">
 
-  <!-- Header -->
-  <header class="bg-white/90 backdrop-blur-md shadow-md border-b-4 border-amber-300 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-      <div class="flex items-center gap-3">
-        <div class="bg-gradient-to-tr from-amber-400 to-yellow-300 p-2.5 rounded-2xl shadow-md">
-          <i class="fa-solid fa-graduation-cap text-2xl text-white"></i>
-        </div>
-        <div>
-          <h1 class="text-2xl md:text-3xl font-extrabold font-fredoka bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 bg-clip-text text-transparent">
-            Interactive Fun Learn
-          </h1>
-          <p class="text-xs text-slate-500 font-bold">Fun Interactive Learning Playground</p>
-        </div>
-      </div>
-
-      <!-- Score & Stars Tracker -->
-      <div class="flex items-center gap-4 bg-amber-50 px-4 py-2 rounded-2xl border-2 border-amber-200 shadow-inner">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-star text-amber-400 text-2xl drop-shadow-sm"></i>
-          <span id="starCount" class="text-2xl font-black font-fredoka text-amber-600">0</span>
-        </div>
-        <div class="h-6 w-0.5 bg-amber-200"></div>
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-trophy text-indigo-500 text-xl"></i>
-          <span id="scoreCount" class="text-xl font-bold font-fredoka text-indigo-700">0 pts</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Top Scrollable Horizontal Tabs Navigation -->
-  <nav class="bg-white/80 border-b border-slate-200 shadow-sm sticky top-[69px] z-40">
-    <div class="max-w-7xl mx-auto px-4 py-2">
-      <div class="flex gap-2 overflow-x-auto tab-scrollbar pb-1 pt-1 whitespace-nowrap">
-        <button onclick="switchTab('wordCards')" id="tab-wordCards" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-font text-emerald-500"></i>
-          <span>1. Words</span>
-        </button>
-        <button onclick="switchTab('sentences')" id="tab-sentences" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-align-left text-teal-500"></i>
-          <span>2. Sentences</span>
-        </button>
-        <button onclick="switchTab('froggy')" id="tab-froggy" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-frog text-green-500"></i>
-          <span>3. Froggy Jump</span>
-        </button>
-        <button onclick="switchTab('thousands')" id="tab-thousands" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-arrow-up-9-1 text-blue-500"></i>
-          <span>4. Thousands</span>
-        </button>
-        <button onclick="switchTab('placeValue')" id="tab-placeValue" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-cubes text-indigo-500"></i>
-          <span>5. Place Value</span>
-        </button>
-        <button onclick="switchTab('addition')" id="tab-addition" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-plus text-purple-500"></i>
-          <span>6. Carry Addition</span>
-        </button>
-        <button onclick="switchTab('subtraction')" id="tab-subtraction" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-minus text-rose-500"></i>
-          <span>7. Borrow Subtraction</span>
-        </button>
-        <button onclick="switchTab('multiplication')" id="tab-multiplication" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-xmark text-amber-500"></i>
-          <span>8. Multiplication</span>
-        </button>
-        <button onclick="switchTab('order')" id="tab-order" class="tab-btn px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-2 transition shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
-          <i class="fa-solid fa-arrow-down-short-wide text-orange-500"></i>
-          <span>9. Ascending/Descending</span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Container -->
-  <div class="max-w-5xl mx-auto px-4 py-6 flex-1 w-full flex flex-col">
-
-    <!-- Active Module Card Work Area -->
-    <main class="w-full bg-white rounded-3xl p-6 md:p-8 shadow-xl border-2 border-slate-100 flex-1 flex flex-col justify-between">
-      
-      <!-- Top Action Bar for Active Module -->
-      <div class="flex flex-wrap justify-between items-center gap-4 pb-4 border-b-2 border-slate-100">
-        <div>
-          <h2 id="moduleTitle" class="text-2xl md:text-3xl font-extrabold font-fredoka text-slate-800">Module Title</h2>
-          <p id="moduleSubtitle" class="text-sm font-semibold text-slate-500">Task Instructions</p>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="generateGeminiQuestion()" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition flex items-center gap-2 text-sm">
-            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-            <span>Gemini AI Magic Q</span>
-          </button>
-          <button onclick="nextRandomQuestion()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-2xl shadow-md transition flex items-center gap-2 text-sm">
-            <i class="fa-solid fa-rotate text-sky-400"></i>
-            <span>New Question</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Dynamic Workspace Content -->
-      <div id="moduleContent" class="my-6 flex-1 flex flex-col justify-center items-center">
-
-        <!-- MODULE 1: Word Flash Cards -->
-        <div id="mod-wordCards" class="module-panel hidden w-full max-w-xl mx-auto text-center space-y-6">
-          <div class="bg-amber-50 rounded-3xl p-10 border-4 border-amber-200 shadow-inner flex flex-col items-center justify-center min-h-[220px]">
-            <span id="flashWordDisplay" class="text-6xl md:text-7xl font-black font-fredoka text-slate-800 tracking-wide animate-pop">
-              CAT
-            </span>
-          </div>
-          <button onclick="speakText(document.getElementById('flashWordDisplay').innerText)" class="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-lg rounded-2xl shadow-lg transition flex items-center gap-3 mx-auto">
-            <i class="fa-solid fa-volume-high text-2xl"></i> Listen 🔊
-          </button>
-          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <p class="text-sm font-extrabold text-slate-600 mb-3">Parent / Self Verification:</p>
-            <div class="flex justify-center gap-4">
-              <button onclick="handleWordVerification(true)" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base rounded-2xl shadow-md transition">
-                Got It Right! 🎉
-              </button>
-              <button onclick="handleWordVerification(false)" class="px-5 py-3 bg-rose-500 hover:bg-rose-600 text-white font-black text-base rounded-2xl shadow-md transition">
-                Try Again 🔄
-              </button>
+    <!-- App Header -->
+    <header class="bg-white border-b-2 border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center text-white text-xl shadow-md font-fredoka">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold font-fredoka text-slate-800 tracking-wide">
+                    Interactive Fun Learn
+                </h1>
             </div>
-          </div>
-        </div>
 
-        <!-- MODULE 2: Simple Sentences -->
-        <div id="mod-sentences" class="module-panel hidden w-full max-w-2xl mx-auto space-y-6 text-center">
-          <div class="bg-sky-50 p-8 rounded-3xl border-4 border-sky-200 shadow-inner min-h-[160px] flex items-center justify-center">
-            <p id="sentenceDisplay" class="text-2xl md:text-3xl font-extrabold text-slate-800 leading-relaxed">
-              The <span class="px-4 py-1 bg-white border-b-4 border-sky-400 rounded-xl text-sky-600 inline-block min-w-[100px] shadow-sm">???</span> sat on the mat.
-            </p>
-          </div>
-          <button onclick="speakSentencePrompt()" class="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-md transition inline-flex items-center gap-2">
-            <i class="fa-solid fa-volume-high"></i> Read Aloud 🔊
-          </button>
-          <div id="sentenceWordBank" class="flex flex-wrap justify-center gap-3 pt-2"></div>
-        </div>
-
-        <!-- MODULE 3: Froggy Jump -->
-        <div id="mod-froggy" class="module-panel hidden w-full max-w-3xl mx-auto space-y-6 text-center">
-          <div id="froggyEquation" class="text-5xl md:text-6xl font-black font-fredoka text-slate-800 bg-amber-50 py-4 px-8 rounded-2xl border-2 border-amber-200 inline-block shadow-sm">
-            3 + 4 = ?
-          </div>
-
-          <div class="overflow-x-auto pb-4 pt-6">
-            <div class="inline-flex items-center gap-2 min-w-[650px] px-4 py-6 bg-blue-50/70 rounded-3xl border-2 border-blue-200 relative">
-              <div id="numberLineContainer" class="flex justify-between items-center w-full relative"></div>
+            <!-- Star Points Counter -->
+            <div class="flex items-center gap-2 bg-amber-50 border-2 border-amber-200 px-4 py-1.5 rounded-full shadow-inner">
+                <i class="fa-solid fa-star text-amber-500 text-xl pop-star"></i>
+                <span id="star-count" class="font-fredoka text-xl text-amber-700">0</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-600 hidden sm:inline">Stars</span>
             </div>
-          </div>
+        </div>
 
-          <div class="flex justify-center items-center gap-4">
-            <button onclick="resetFrogPosition()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm transition">
-              Reset Frog
+        <!-- Scrollable Module Tabs -->
+        <div class="bg-slate-100 border-t border-slate-200">
+            <div class="max-w-6xl mx-auto px-2 overflow-x-auto tab-scroll py-2 flex gap-2" id="module-tabs">
+                <!-- Dynamic tabs inserted here via JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl w-full mx-auto p-4 flex-1 flex flex-col justify-center my-4">
+        
+        <!-- Action Control Bar -->
+        <div class="flex justify-between items-center mb-6 bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+            <div class="flex items-center gap-2 text-slate-600 font-semibold text-sm">
+                <span id="module-indicator" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-fredoka">
+                    Module 1
+                </span>
+                <span id="ai-badge" class="hidden sm:inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Gemini AI
+                </span>
+            </div>
+
+            <button id="btn-new-q" onclick="fetchNewQuestion(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2 text-sm md:text-base">
+                <i class="fa-solid fa-rotate-right" id="new-q-icon"></i>
+                <span>New Question</span>
             </button>
-            <span class="text-sm font-extrabold text-slate-500">Click a lilypad or jump frog to target answer!</span>
-          </div>
         </div>
 
-        <!-- MODULE 4: Numbers to Thousands (REVISED: READ ALOUD ONLY, NO TEXTBOX) -->
-        <div id="mod-thousands" class="module-panel hidden w-full max-w-xl mx-auto space-y-6 text-center">
-          <div class="bg-indigo-50 p-8 rounded-3xl border-4 border-indigo-200 shadow-inner flex flex-col items-center justify-center min-h-[200px]">
-            <div class="text-xs font-black uppercase text-indigo-500 tracking-wider mb-2">Read This Number Aloud</div>
-            <div id="thousandsDisplay" class="text-6xl md:text-7xl font-black text-indigo-900 font-fredoka animate-pop tracking-wide">
-              2,458
-            </div>
-          </div>
-
-          <button onclick="speakText(document.getElementById('thousandsAudioText').value)" class="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold text-lg rounded-2xl shadow-lg transition flex items-center gap-3 mx-auto">
-            <i class="fa-solid fa-volume-high text-2xl"></i> Listen 🔊
-          </button>
-          <input type="hidden" id="thousandsAudioText" value="2458">
-
-          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <p class="text-sm font-extrabold text-slate-600 mb-3">Parent / Self Verification:</p>
-            <div class="flex justify-center gap-4">
-              <button onclick="handleThousandsVerification(true)" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base rounded-2xl shadow-md transition">
-                Said It Right! 🎉
-              </button>
-              <button onclick="handleThousandsVerification(false)" class="px-5 py-3 bg-rose-500 hover:bg-rose-600 text-white font-black text-base rounded-2xl shadow-md transition">
-                Try Again 🔄
-              </button>
-            </div>
-          </div>
+        <!-- Dynamic Module Stage -->
+        <div id="module-stage" class="bg-white rounded-3xl border-2 border-slate-200 p-6 md:p-8 shadow-md relative min-h-[380px] flex flex-col justify-center items-center">
+            <!-- Content render targets -->
         </div>
 
-        <!-- MODULE 5: Place Value Decomposition -->
-        <div id="mod-placeValue" class="module-panel hidden w-full max-w-3xl mx-auto space-y-6 text-center">
-          <div class="flex justify-center items-center gap-3">
-            <span class="text-lg md:text-xl font-bold text-slate-600">Target Number:</span>
-            <span id="placeValueTarget" class="text-3xl md:text-4xl font-black font-fredoka text-indigo-600 bg-indigo-50 px-6 py-2 rounded-2xl border-2 border-indigo-200">
-              3,425
-            </span>
-          </div>
-
-          <div class="grid grid-cols-4 gap-2 md:gap-4 bg-slate-50 p-3 md:p-6 rounded-3xl border-2 border-slate-200">
-            <!-- Thousands -->
-            <div class="flex flex-col items-center min-w-0">
-              <span class="font-extrabold text-[11px] md:text-xs text-purple-600 mb-1 truncate">Thousands (1000s)</span>
-              <div id="stack-thousands" class="w-full h-44 bg-white border-2 border-purple-200 rounded-2xl p-1.5 flex flex-col-reverse items-center overflow-hidden"></div>
-              <div class="flex items-center justify-center gap-1.5 mt-3 w-full">
-                <button onclick="adjustPlaceValue('thousands', -1)" class="w-8 h-8 shrink-0 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">-</button>
-                <span id="val-thousands" class="text-lg font-black font-fredoka min-w-[16px] text-center">0</span>
-                <button onclick="adjustPlaceValue('thousands', 1)" class="w-8 h-8 shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">+</button>
-              </div>
-            </div>
-
-            <!-- Hundreds -->
-            <div class="flex flex-col items-center min-w-0">
-              <span class="font-extrabold text-[11px] md:text-xs text-sky-600 mb-1 truncate">Hundreds (100s)</span>
-              <div id="stack-hundreds" class="w-full h-44 bg-white border-2 border-sky-200 rounded-2xl p-1.5 flex flex-col-reverse items-center overflow-hidden"></div>
-              <div class="flex items-center justify-center gap-1.5 mt-3 w-full">
-                <button onclick="adjustPlaceValue('hundreds', -1)" class="w-8 h-8 shrink-0 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">-</button>
-                <span id="val-hundreds" class="text-lg font-black font-fredoka min-w-[16px] text-center">0</span>
-                <button onclick="adjustPlaceValue('hundreds', 1)" class="w-8 h-8 shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">+</button>
-              </div>
-            </div>
-
-            <!-- Tens -->
-            <div class="flex flex-col items-center min-w-0">
-              <span class="font-extrabold text-[11px] md:text-xs text-amber-600 mb-1 truncate">Tens (10s)</span>
-              <div id="stack-tens" class="w-full h-44 bg-white border-2 border-amber-200 rounded-2xl p-1.5 flex flex-col-reverse items-center overflow-hidden"></div>
-              <div class="flex items-center justify-center gap-1.5 mt-3 w-full">
-                <button onclick="adjustPlaceValue('tens', -1)" class="w-8 h-8 shrink-0 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">-</button>
-                <span id="val-tens" class="text-lg font-black font-fredoka min-w-[16px] text-center">0</span>
-                <button onclick="adjustPlaceValue('tens', 1)" class="w-8 h-8 shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">+</button>
-              </div>
-            </div>
-
-            <!-- Units -->
-            <div class="flex flex-col items-center min-w-0">
-              <span class="font-extrabold text-[11px] md:text-xs text-emerald-600 mb-1 truncate">Units (1s)</span>
-              <div id="stack-ones" class="w-full h-44 bg-white border-2 border-emerald-200 rounded-2xl p-1.5 flex flex-col-reverse items-center overflow-hidden"></div>
-              <div class="flex items-center justify-center gap-1.5 mt-3 w-full">
-                <button onclick="adjustPlaceValue('ones', -1)" class="w-8 h-8 shrink-0 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">-</button>
-                <span id="val-ones" class="text-lg font-black font-fredoka min-w-[16px] text-center">0</span>
-                <button onclick="adjustPlaceValue('ones', 1)" class="w-8 h-8 shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-black text-base shadow flex items-center justify-center">+</button>
-              </div>
-            </div>
-          </div>
-
-          <button onclick="checkPlaceValueAnswer()" class="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-2xl shadow-lg transition">
-            Check Representation
-          </button>
-        </div>
-
-        <!-- MODULE 6: Addition with Carry -->
-        <div id="mod-addition" class="module-panel hidden w-full max-w-md mx-auto space-y-6">
-          <div class="bg-purple-50 p-6 rounded-3xl border-4 border-purple-200 font-mono text-slate-800">
-            <div class="grid grid-cols-5 gap-2 text-center text-xs font-black text-slate-400 mb-2">
-              <span></span>
-              <span>Th</span>
-              <span>H</span>
-              <span>T</span>
-              <span>U</span>
-            </div>
-
-            <div class="grid grid-cols-5 gap-2 text-center items-center mb-3">
-              <span class="text-xs font-extrabold text-purple-600 uppercase text-right pr-1">Carry:</span>
-              <input type="text" id="add-carry-th" maxlength="1" class="w-10 h-10 text-center font-bold text-purple-700 bg-white border-2 border-purple-300 rounded-lg text-sm mx-auto shadow-sm">
-              <input type="text" id="add-carry-h" maxlength="1" class="w-10 h-10 text-center font-bold text-purple-700 bg-white border-2 border-purple-300 rounded-lg text-sm mx-auto shadow-sm">
-              <input type="text" id="add-carry-t" maxlength="1" class="w-10 h-10 text-center font-bold text-purple-700 bg-white border-2 border-purple-300 rounded-lg text-sm mx-auto shadow-sm">
-              <span class="w-10"></span>
-            </div>
-
-            <div class="grid grid-cols-5 gap-2 text-center text-3xl font-black font-fredoka border-b-4 border-purple-800 pb-3 items-center">
-              <span></span>
-              <span id="add-n1-th" class="w-full text-center"></span>
-              <span id="add-n1-h" class="w-full text-center">4</span>
-              <span id="add-n1-t" class="w-full text-center">5</span>
-              <span id="add-n1-u" class="w-full text-center">2</span>
-
-              <span class="text-purple-600 text-3xl font-bold text-center">+</span>
-              <span id="add-n2-th" class="w-full text-center"></span>
-              <span id="add-n2-h" class="w-full text-center">4</span>
-              <span id="add-n2-t" class="w-full text-center">1</span>
-              <span id="add-n2-u" class="w-full text-center">1</span>
-            </div>
-
-            <div class="grid grid-cols-5 gap-2 pt-4 text-center items-center">
-              <span></span>
-              <input type="text" id="add-ans-th" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto shadow-sm">
-              <input type="text" id="add-ans-h" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto shadow-sm">
-              <input type="text" id="add-ans-t" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto shadow-sm">
-              <input type="text" id="add-ans-u" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto shadow-sm">
-            </div>
-          </div>
-          <button onclick="checkAdditionAnswer()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-black text-lg rounded-2xl shadow-lg transition">
-            Check Addition
-          </button>
-        </div>
-
-        <!-- MODULE 7: Subtraction with Borrowing -->
-        <div id="mod-subtraction" class="module-panel hidden w-full max-w-md mx-auto space-y-6">
-          <div class="bg-rose-50 p-6 rounded-3xl border-4 border-rose-200 font-mono text-slate-800">
-            <div class="grid grid-cols-4 gap-2 mb-2 text-center items-end">
-              <span class="text-xs font-bold text-slate-400">Borrow:</span>
-              <input type="text" id="sub-borr-h" maxlength="2" class="w-10 h-10 text-center font-bold text-rose-600 bg-white border-2 border-rose-300 rounded-lg text-xs mx-auto">
-              <input type="text" id="sub-borr-t" maxlength="2" class="w-10 h-10 text-center font-bold text-rose-600 bg-white border-2 border-rose-300 rounded-lg text-xs mx-auto">
-              <input type="text" id="sub-borr-u" maxlength="2" class="w-10 h-10 text-center font-bold text-rose-600 bg-white border-2 border-rose-300 rounded-lg text-xs mx-auto">
-            </div>
-
-            <div class="grid grid-cols-4 gap-2 text-center text-3xl font-black font-fredoka border-b-4 border-rose-800 pb-3">
-              <span></span>
-              <span id="sub-n1-h">5</span>
-              <span id="sub-n1-t">2</span>
-              <span id="sub-n1-u">4</span>
-
-              <span class="text-rose-600">-</span>
-              <span id="sub-n2-h">2</span>
-              <span id="sub-n2-t">6</span>
-              <span id="sub-n2-u">7</span>
-            </div>
-
-            <div class="grid grid-cols-4 gap-2 pt-4 text-center">
-              <span></span>
-              <input type="text" id="sub-ans-h" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto">
-              <input type="text" id="sub-ans-t" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto">
-              <input type="text" id="sub-ans-u" maxlength="1" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl mx-auto">
-            </div>
-          </div>
-          <button onclick="checkSubtractionAnswer()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-black text-lg rounded-2xl shadow-lg transition">
-            Check Subtraction
-          </button>
-        </div>
-
-        <!-- MODULE 8: Multiplication -->
-        <div id="mod-multiplication" class="module-panel hidden w-full max-w-md mx-auto space-y-6 text-center">
-          <div class="bg-amber-50 p-6 rounded-3xl border-4 border-amber-200">
-            <!-- Side-by-side horizontal multiplication equation -->
-            <div id="mulEquationDisplay" class="text-4xl md:text-5xl font-black font-fredoka text-slate-800 py-3 mb-4 bg-white rounded-2xl border-2 border-amber-200 shadow-sm inline-block px-6">
-              143 × 4 = ?
-            </div>
-
-            <p class="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Enter Answer Digits:</p>
-            <div class="flex justify-center items-center gap-2 pt-1 text-center">
-              <input type="text" id="mul-ans-th" maxlength="1" placeholder="Th" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl shadow-sm">
-              <input type="text" id="mul-ans-h" maxlength="1" placeholder="H" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl shadow-sm">
-              <input type="text" id="mul-ans-t" maxlength="1" placeholder="T" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl shadow-sm">
-              <input type="text" id="mul-ans-u" maxlength="1" placeholder="U" class="w-12 h-12 text-center font-black text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl shadow-sm">
-            </div>
-          </div>
-          <button onclick="checkMultiplicationAnswer()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-black text-lg rounded-2xl shadow-lg transition">
-            Check Product
-          </button>
-        </div>
-
-        <!-- MODULE 9: Ascending & Descending Order -->
-        <div id="mod-order" class="module-panel hidden w-full max-w-2xl mx-auto space-y-6 text-center">
-          <div class="bg-orange-50 p-4 rounded-2xl border-2 border-orange-200 flex justify-between items-center px-6">
-            <span class="font-extrabold text-slate-700">Sort Mode:</span>
-            <span id="orderModeBadge" class="text-lg font-black font-fredoka text-orange-600 bg-white px-4 py-1 rounded-xl shadow-sm">
-              Ascending (Smallest to Largest)
-            </span>
-          </div>
-
-          <div>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Available Blocks (Click to place in staircase)</p>
-            <div id="orderNumberPool" class="flex flex-wrap justify-center gap-3 min-h-[60px]"></div>
-          </div>
-
-          <div id="orderSlotsContainer" class="flex justify-center items-end gap-3 min-h-[160px] pt-4 border-b-2 border-slate-200 pb-4"></div>
-
-          <div class="flex justify-center gap-4">
-            <button onclick="resetOrderSlots()" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition">
-              Reset Slots
-            </button>
-            <button onclick="checkOrderAnswer()" class="px-8 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-2xl shadow-lg transition">
-              Check Order
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Feedback Banner -->
-      <div id="feedbackBanner" class="hidden p-4 rounded-2xl text-center font-bold text-lg animate-pop"></div>
-
+        <!-- Toast Notification Area -->
+        <div id="toast" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl text-white font-bold text-lg shadow-xl transition-all flex items-center gap-2"></div>
     </main>
-  </div>
 
-  <!-- Footer Footnote -->
-  <footer class="bg-white border-t border-slate-200 py-4 text-center">
-    <p class="text-sm font-bold text-slate-600">
-      Designed &amp; Created by Srikantha N for Young Learners
-    </p>
-  </footer>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-slate-500 font-semibold text-sm">
+        Designed & Created by Srikantha N for Young Learners
+    </footer>
 
-  <!-- Application Logic JS -->
-  <script>
-    let currentModule = 'wordCards';
-    let stars = 0;
-    let score = 0;
-    let activeQuestionData = {};
+    <script>
+        /*
+         * App Modules State & Data Setup
+         */
+        const MODULES = [
+            { id: 'flashcards', name: 'Word Flashcards', icon: 'fa-spell-check' },
+            { id: 'sentences', name: 'Simple Sentences', icon: 'fa-book-open' },
+            { id: 'froggy', name: 'Froggy Jump', icon: 'fa-frog' },
+            { id: 'thousands', name: 'Numbers to Thousands', icon: 'fa-arrow-up-9-1' },
+            { id: 'placevalue', name: 'Place Value', icon: 'fa-cubes' },
+            { id: 'addition', name: 'Addition w/ Carry', icon: 'fa-plus' },
+            { id: 'subtraction', name: 'Subtraction w/ Borrow', icon: 'fa-minus' },
+            { id: 'multiplication', name: 'Multiplication', icon: 'fa-xmark' },
+            { id: 'ordering', name: 'Ascending / Descending', icon: 'fa-stairs' }
+        ];
 
-    const simpleWords = ['cat', 'dog', 'sun', 'hat', 'run', 'play', 'jump', 'happy', 'star', 'tree', 'book', 'duck', 'frog', 'fish', 'blue', 'pink'];
-    const sentenceTemplates = [
-      { template: "The {blank} sat on the mat.", answer: "cat", options: ["cat", "car", "cup"] },
-      { template: "I see a big {blank} in the sky.", answer: "sun", options: ["sun", "swim", "sad"] },
-      { template: "The little frog can {blank}.", answer: "jump", options: ["jump", "juice", "jug"] },
-      { template: "She likes to read a {blank}.", answer: "book", options: ["book", "boat", "box"] },
-      { template: "We love to {blank} in the park.", answer: "play", options: ["play", "pen", "pig"] }
-    ];
+        let currentModuleIndex = 0;
+        let starPoints = 0;
+        let currentQuestionData = null;
+        let isAILoading = false;
 
-    window.onload = function() {
-      switchTab('wordCards');
-    };
+        // User Interactive State for complex modules
+        let pvUserCounts = { thousands: 0, hundreds: 0, tens: 0, units: 0 };
 
-    function switchTab(moduleId) {
-      currentModule = moduleId;
-      
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
-        btn.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
-      });
-      
-      const activeTab = document.getElementById(`tab-${moduleId}`);
-      if(activeTab) {
-        activeTab.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
-        activeTab.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
-        activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
+        /* =========================================================================
+           LOCAL FALLBACK GENERATOR POOLS (Guarantees uninterrupted play offline)
+           ========================================================================= */
+        const FALLBACK_POOLS = {
+            flashcards: [
+                { word: "ELEPHANT", category: "Animals", hint: "A large land animal with a trunk" },
+                { word: "SUNSHINE", category: "Nature", hint: "Warm bright light from the sky" },
+                { word: "BUTTERFLY", category: "Insects", hint: "Colorful flying insect" },
+                { word: "RAINBOW", category: "Nature", hint: "Multi-colored arc in the sky" },
+                { word: "EXPLORER", category: "Action", hint: "Someone who travels to discover" },
+                { word: "KANGAROO", category: "Animals", hint: "Australian hopping animal" },
+                { word: "ASTRONAUT", category: "Space", hint: "Person who travels into space" }
+            ],
+            sentences: [
+                { text: "The bright ___ shines in the blue sky.", blank: "sun", options: ["sun", "fish", "tree"], full: "The bright sun shines in the blue sky." },
+                { text: "Little monkeys love to eat ripe ___.", blank: "bananas", options: ["bananas", "rocks", "shoes"], full: "Little monkeys love to eat ripe bananas." },
+                { text: "She put on her blue coat because it was ___ outside.", blank: "cold", options: ["cold", "hot", "dry"], full: "She put on her blue coat because it was cold outside." },
+                { text: "The white fluffy rabbit likes to hop in the ___.", blank: "garden", options: ["garden", "ocean", "cloud"], full: "The white fluffy rabbit likes to hop in the garden." }
+            ],
+            froggy: [
+                { start: 3, jump: 4, type: '+', result: 7 },
+                { start: 12, jump: 5, type: '-', result: 7 },
+                { start: 6, jump: 6, type: '+', result: 12 },
+                { start: 15, jump: 8, type: '-', result: 7 },
+                { start: 4, jump: 9, type: '+', result: 13 }
+            ],
+            thousands: [
+                { number: 4829, wordFormat: "Four thousand, eight hundred twenty-nine" },
+                { number: 1250, wordFormat: "One thousand, two hundred fifty" },
+                { number: 7093, wordFormat: "Seven thousand, ninety-three" },
+                { number: 9999, wordFormat: "Nine thousand, nine hundred ninety-nine" },
+                { number: 3401, wordFormat: "Three thousand, four hundred one" }
+            ],
+            placevalue: [
+                { thousands: 2, hundreds: 4, tens: 3, units: 5, number: 2435 },
+                { thousands: 1, hundreds: 0, tens: 6, units: 2, number: 1062 },
+                { thousands: 3, hundreds: 5, tens: 1, units: 8, number: 3518 },
+                { thousands: 4, hundreds: 2, tens: 0, units: 4, number: 4204 }
+            ],
+            addition: [
+                { num1: 3784, num2: 2568, sum: 6352 },
+                { num1: 4659, num2: 1873, sum: 6532 },
+                { num1: 2895, num2: 3417, sum: 6312 },
+                { num1: 5248, num2: 2964, sum: 8212 }
+            ],
+            subtraction: [
+                { minuend: 6243, subtrahend: 2815, difference: 3428 },
+                { minuend: 5412, subtrahend: 1638, difference: 3774 },
+                { minuend: 8000, subtrahend: 3421, difference: 4579 }
+            ],
+            multiplication: [
+                { factor1: 143, factor2: 4, product: 572 },
+                { factor1: 216, factor2: 3, product: 648 },
+                { factor1: 324, factor2: 5, product: 1620 },
+                { factor1: 108, factor2: 6, product: 648 }
+            ],
+            ordering: [
+                { numbers: [42, 18, 89, 31, 65], type: "ascending", sorted: [18, 31, 42, 65, 89] },
+                { numbers: [340, 120, 890, 550, 410], type: "descending", sorted: [890, 550, 410, 340, 120] },
+                { numbers: [15, 9, 27, 3, 18], type: "ascending", sorted: [3, 9, 15, 18, 27] }
+            ]
+        };
 
-      document.querySelectorAll('.module-panel').forEach(p => p.classList.add('hidden'));
+        /**
+         * Fetch a fresh question using Gemini API (gemini-2.5-flash) or Fallback
+         */
+        async function fetchNewQuestion(showToastNotice = false) {
+            if (isAILoading) return;
+            isAILoading = true;
 
-      const titleMap = {
-        wordCards: ["Word Flash Cards", "Read the word aloud clearly."],
-        sentences: ["Simple Sentences", "Fill in the blank with the correct word."],
-        froggy: ["Froggy Jump (Number Line)", "Solve the equation by jumping Froggy to the correct answer!"],
-        thousands: ["Numbers to Thousands", "Read the large number aloud clearly."],
-        placeValue: ["Place Value Decomposition", "Add or remove block towers to match the target number."],
-        addition: ["Addition with Carry", "Calculate addition column by column with carryover."],
-        subtraction: ["Subtraction with Borrowing", "Subtract multi-digit numbers using borrowing."],
-        multiplication: ["Multiplication", "Multiply numbers digit by digit."],
-        order: ["Ascending & Descending Order", "Arrange the numbers in the correct sequence."]
-      };
+            const newQBtn = document.getElementById('btn-new-q');
+            const icon = document.getElementById('new-q-icon');
+            if (icon) icon.classList.add('fa-spin');
+            if (newQBtn) newQBtn.disabled = true;
 
-      document.getElementById('moduleTitle').innerText = titleMap[moduleId][0];
-      document.getElementById('moduleSubtitle').innerText = titleMap[moduleId][1];
-      document.getElementById(`mod-${moduleId}`).classList.remove('hidden');
+            const mod = MODULES[currentModuleIndex];
+            
+            // Generate System Prompt for exact Module Structure
+            const systemPrompt = `You are an educational AI generator for a kids' interactive learning web application. 
+Generate a single, brand-new, age-appropriate question object for the module "${mod.name}" (ID: ${mod.id}).
+Output ONLY valid raw JSON with NO markdown formatting, NO backticks, and NO extra text.
 
-      hideFeedback();
-      nextRandomQuestion();
-    }
+Data Format rules based on module ID:
+- "flashcards": {"word": "STRING (6-10 letters)", "category": "STRING", "hint": "STRING"}
+- "sentences": {"text": "STRING with ___ blank", "blank": "CORRECT_WORD", "options": ["3 options array containing blank"], "full": "COMPLETE SENTENCE"}
+- "froggy": {"start": NUMBER (1-10), "jump": NUMBER (1-9), "type": "+" or "-", "result": NUMBER (1-20)}
+- "thousands": {"number": NUMBER (1000-9999), "wordFormat": "Number in English words"}
+- "placevalue": {"thousands": NUMBER(0-5), "hundreds": NUMBER(0-9), "tens": NUMBER(0-9), "units": NUMBER(0-9), "number": COMBINED_NUMBER}
+- "addition": {"num1": NUMBER(1000-8000), "num2": NUMBER(1000-8000), "sum": SUM_OF_NUM1_AND_NUM2}
+- "subtraction": {"minuend": NUMBER(2000-9999), "subtrahend": NUMBER(1000-minuend-1), "difference": MINUEND_MINUS_SUBTRAHEND}
+- "multiplication": {"factor1": NUMBER(100-400), "factor2": NUMBER(2-8), "product": FACTOR1*FACTOR2}
+- "ordering": {"numbers": [ARRAY OF 5 NUMBERS], "type": "ascending" OR "descending", "sorted": [CORRECTLY SORTED ARRAY]}`;
 
-    function speakText(text) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.85;
-        utterance.pitch = 1.1;
-        window.speechSynthesis.speak(utterance);
-      }
-    }
+            const userQuery = `Generate a fresh, fun, non-repeating question for module ${mod.name}. Timestamp random seed: ${Date.now()}`;
+            const apiKey = ""; // Canvas runtime provides standard key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-    function nextRandomQuestion() {
-      hideFeedback();
-      switch(currentModule) {
-        case 'wordCards': genWordCards(); break;
-        case 'sentences': genSentences(); break;
-        case 'froggy': genFroggy(); break;
-        case 'thousands': genThousands(); break;
-        case 'placeValue': genPlaceValue(); break;
-        case 'addition': genAddition(); break;
-        case 'subtraction': genSubtraction(); break;
-        case 'multiplication': genMultiplication(); break;
-        case 'order': genOrder(); break;
-      }
-    }
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
 
-    // Module 1: Word Flash Cards
-    function genWordCards() {
-      const word = simpleWords[Math.floor(Math.random() * simpleWords.length)];
-      document.getElementById('flashWordDisplay').innerText = word.toUpperCase();
-      activeQuestionData = { word };
-    }
+                if (!response.ok) throw new Error("API call failed");
 
-    function handleWordVerification(isCorrect) {
-      if(isCorrect) {
-        addReward(10);
-        showFeedback("Awesome job reading! +10 pts 🎉", "bg-emerald-100", "text-emerald-800");
-      } else {
-        showFeedback("Keep practicing! Let's try another word. 💪", "bg-amber-100", "text-amber-800");
-      }
-      setTimeout(nextRandomQuestion, 1200);
-    }
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!jsonText) throw new Error("Empty response");
 
-    // Module 2: Simple Sentences
-    function genSentences() {
-      const item = sentenceTemplates[Math.floor(Math.random() * sentenceTemplates.length)];
-      activeQuestionData = { ...item, selectedAnswer: null };
+                const parsedData = JSON.parse(jsonText);
+                currentQuestionData = parsedData;
 
-      const sentenceHTML = item.template.replace('{blank}', `<span id="sentenceBlank" class="px-4 py-1 bg-white border-b-4 border-sky-400 rounded-xl text-sky-600 inline-block min-w-[100px] shadow-sm">???</span>`);
-      document.getElementById('sentenceDisplay').innerHTML = sentenceHTML;
-
-      const bank = document.getElementById('sentenceWordBank');
-      bank.innerHTML = '';
-      
-      const shuffled = [...item.options].sort(() => Math.random() - 0.5);
-      shuffled.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = "px-6 py-3 bg-white hover:bg-sky-50 text-slate-700 font-extrabold text-lg border-2 border-sky-200 rounded-2xl shadow-md transition transform active:scale-95";
-        btn.innerText = opt;
-        btn.onclick = () => selectSentenceOption(opt);
-        bank.appendChild(btn);
-      });
-    }
-
-    function selectSentenceOption(opt) {
-      const blank = document.getElementById('sentenceBlank');
-      blank.innerText = opt;
-      if(opt === activeQuestionData.answer) {
-        addReward(10);
-        showFeedback("Correct sentence! 🎉", "bg-emerald-100", "text-emerald-800");
-        speakText(activeQuestionData.template.replace('{blank}', opt));
-        setTimeout(nextRandomQuestion, 1800);
-      } else {
-        showFeedback("Not quite right, try another word!", "bg-rose-100", "text-rose-800");
-      }
-    }
-
-    function speakSentencePrompt() {
-      const txt = document.getElementById('sentenceDisplay').innerText;
-      speakText(txt.replace('???', 'blank'));
-    }
-
-    // Module 3: Froggy Jump
-    function genFroggy() {
-      const isAdd = Math.random() > 0.4;
-      let n1, n2, target;
-      if(isAdd) {
-        n1 = Math.floor(Math.random() * 8) + 1;
-        n2 = Math.floor(Math.random() * (15 - n1)) + 1;
-        target = n1 + n2;
-        document.getElementById('froggyEquation').innerText = `${n1} + ${n2} = ?`;
-      } else {
-        n1 = Math.floor(Math.random() * 10) + 5;
-        n2 = Math.floor(Math.random() * n1) + 1;
-        target = n1 - n2;
-        document.getElementById('froggyEquation').innerText = `${n1} - ${n2} = ?`;
-      }
-
-      activeQuestionData = { target, currentPos: 0 };
-      renderFroggyLine();
-    }
-
-    function renderFroggyLine() {
-      const container = document.getElementById('numberLineContainer');
-      container.innerHTML = '';
-      for(let i=0; i<=15; i++) {
-        const isFrogHere = (i === activeQuestionData.currentPos);
-        const pad = document.createElement('div');
-        pad.className = `flex flex-col items-center cursor-pointer group transition-all`;
-        pad.onclick = () => moveFrogTo(i);
-        pad.innerHTML = `
-          <div class="h-10 flex items-center justify-center">
-            ${isFrogHere ? '<i class="fa-solid fa-frog text-3xl text-emerald-600 animate-bounce"></i>' : ''}
-          </div>
-          <div class="w-10 h-10 rounded-full ${isFrogHere ? 'bg-emerald-500 text-white' : 'bg-emerald-100 group-hover:bg-emerald-200 text-emerald-800'} font-black flex items-center justify-center text-sm border-2 border-emerald-300 shadow">
-            ${i}
-          </div>
-        `;
-        container.appendChild(pad);
-      }
-    }
-
-    function moveFrogTo(pos) {
-      activeQuestionData.currentPos = pos;
-      renderFroggyLine();
-      if(pos === activeQuestionData.target) {
-        addReward(10);
-        showFeedback("Ribbit! You reached the right answer! 🐸🎉", "bg-emerald-100", "text-emerald-800");
-        speakText(`Correct! Answer is ${pos}`);
-        setTimeout(nextRandomQuestion, 1600);
-      }
-    }
-
-    function resetFrogPosition() {
-      activeQuestionData.currentPos = 0;
-      renderFroggyLine();
-    }
-
-    // Module 4: Numbers to Thousands (REVISED READ ALOUD)
-    function genThousands() {
-      const num = Math.floor(Math.random() * 9000) + 1000;
-      activeQuestionData = { num };
-      
-      document.getElementById('thousandsDisplay').innerText = num.toLocaleString();
-      document.getElementById('thousandsAudioText').value = num;
-    }
-
-    function handleThousandsVerification(isCorrect) {
-      if(isCorrect) {
-        addReward(10);
-        showFeedback("Great number reading! +10 pts 🎉", "bg-emerald-100", "text-emerald-800");
-      } else {
-        showFeedback("Keep practicing! Let's try another number. 💪", "bg-amber-100", "text-amber-800");
-      }
-      setTimeout(nextRandomQuestion, 1200);
-    }
-
-    // Module 5: Place Value Decomposition
-    function genPlaceValue() {
-      const target = Math.floor(Math.random() * 4000) + 1000;
-      const digits = target.toString().padStart(4, '0');
-
-      activeQuestionData = {
-        target: target,
-        targetTh: parseInt(digits[0]),
-        targetH: parseInt(digits[1]),
-        targetT: parseInt(digits[2]),
-        targetU: parseInt(digits[3]),
-        counts: { thousands: 0, hundreds: 0, tens: 0, ones: 0 }
-      };
-
-      document.getElementById('placeValueTarget').innerText = target.toLocaleString();
-      updatePlaceValueUI();
-    }
-
-    function adjustPlaceValue(col, delta) {
-      const current = activeQuestionData.counts[col];
-      if(current + delta >= 0 && current + delta <= 9) {
-        activeQuestionData.counts[col] += delta;
-        updatePlaceValueUI();
-      }
-    }
-
-    function updatePlaceValueUI() {
-      const cols = ['thousands', 'hundreds', 'tens', 'ones'];
-      const bgColors = {
-        thousands: 'bg-purple-500',
-        hundreds: 'bg-sky-500',
-        tens: 'bg-amber-500',
-        ones: 'bg-emerald-500'
-      };
-
-      cols.forEach(col => {
-        const count = activeQuestionData.counts[col];
-        document.getElementById(`val-${col}`).innerText = count;
-        const stack = document.getElementById(`stack-${col}`);
-        stack.innerHTML = '';
-        for(let i=0; i<count; i++) {
-          const blk = document.createElement('div');
-          blk.className = `block-unit ${bgColors[col]} animate-pop`;
-          stack.appendChild(blk);
+                if (showToastNotice) showToast("✨ Fresh AI Question Ready!", "bg-emerald-600");
+            } catch (err) {
+                console.warn("Using local fallback question pool due to:", err);
+                // Fallback to local pool
+                const pool = FALLBACK_POOLS[mod.id];
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                currentQuestionData = pool[randomIndex];
+                if (showToastNotice) showToast("Loaded New Local Question", "bg-indigo-600");
+            } finally {
+                isAILoading = false;
+                if (icon) icon.classList.remove('fa-spin');
+                if (newQBtn) newQBtn.disabled = false;
+                renderCurrentModule();
+            }
         }
-      });
-    }
 
-    function checkPlaceValueAnswer() {
-      const c = activeQuestionData.counts;
-      if(c.thousands === activeQuestionData.targetTh &&
-         c.hundreds === activeQuestionData.targetH &&
-         c.tens === activeQuestionData.targetT &&
-         c.ones === activeQuestionData.targetU) {
-        addReward(15);
-        showFeedback("Perfect block representation! 🧱🎉", "bg-emerald-100", "text-emerald-800");
-        setTimeout(nextRandomQuestion, 1600);
-      } else {
-        showFeedback("Check your block counts against the target digits!", "bg-rose-100", "text-rose-800");
-      }
-    }
+        /**
+         * Render Top Navigation Tabs
+         */
+        function renderTabs() {
+            const container = document.getElementById('module-tabs');
+            container.innerHTML = MODULES.map((m, idx) => `
+                <button onclick="switchModule(${idx})" class="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
+                    idx === currentModuleIndex 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+                }">
+                    <i class="fa-solid ${m.icon}"></i>
+                    <span>${m.name}</span>
+                </button>
+            `).join('');
 
-    // Module 6: Addition with Carry
-    function genAddition() {
-      const n1 = Math.floor(Math.random() * 500) + 150;
-      const n2 = Math.floor(Math.random() * 400) + 150;
-      const sum = n1 + n2;
-
-      const s1 = n1.toString().padStart(3, ' ');
-      const s2 = n2.toString().padStart(3, ' ');
-
-      document.getElementById('add-n1-th').innerText = '';
-      document.getElementById('add-n1-h').innerText = s1[0].trim();
-      document.getElementById('add-n1-t').innerText = s1[1].trim();
-      document.getElementById('add-n1-u').innerText = s1[2].trim();
-
-      document.getElementById('add-n2-th').innerText = '';
-      document.getElementById('add-n2-h').innerText = s2[0].trim();
-      document.getElementById('add-n2-t').innerText = s2[1].trim();
-      document.getElementById('add-n2-u').innerText = s2[2].trim();
-
-      ['add-carry-th', 'add-carry-h', 'add-carry-t', 'add-ans-th', 'add-ans-h', 'add-ans-t', 'add-ans-u'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.value = '';
-      });
-
-      activeQuestionData = { sum };
-    }
-
-    function checkAdditionAnswer() {
-      const th = document.getElementById('add-ans-th').value || '0';
-      const h = document.getElementById('add-ans-h').value || '0';
-      const t = document.getElementById('add-ans-t').value || '0';
-      const u = document.getElementById('add-ans-u').value || '0';
-
-      const userSum = parseInt(`${th}${h}${t}${u}`, 10);
-
-      if(userSum === activeQuestionData.sum) {
-        addReward(15);
-        showFeedback("Great addition skill! 🎉", "bg-emerald-100", "text-emerald-800");
-        setTimeout(nextRandomQuestion, 1600);
-      } else {
-        showFeedback("Check your digits and carryovers!", "bg-rose-100", "text-rose-800");
-      }
-    }
-
-    // Module 7: Subtraction with Borrowing
-    function genSubtraction() {
-      const n1 = Math.floor(Math.random() * 500) + 400;
-      const n2 = Math.floor(Math.random() * 300) + 100;
-      const diff = n1 - n2;
-
-      const s1 = n1.toString();
-      const s2 = n2.toString();
-
-      document.getElementById('sub-n1-h').innerText = s1[0];
-      document.getElementById('sub-n1-t').innerText = s1[1];
-      document.getElementById('sub-n1-u').innerText = s1[2];
-
-      document.getElementById('sub-n2-h').innerText = s2[0];
-      document.getElementById('sub-n2-t').innerText = s2[1];
-      document.getElementById('sub-n2-u').innerText = s2[2];
-
-      ['sub-borr-h', 'sub-borr-t', 'sub-borr-u', 'sub-ans-h', 'sub-ans-t', 'sub-ans-u'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.value = '';
-      });
-
-      activeQuestionData = { diff };
-    }
-
-    function checkSubtractionAnswer() {
-      const h = document.getElementById('sub-ans-h').value || '0';
-      const t = document.getElementById('sub-ans-t').value || '0';
-      const u = document.getElementById('sub-ans-u').value || '0';
-
-      const userDiff = parseInt(`${h}${t}${u}`, 10);
-
-      if(userDiff === activeQuestionData.diff) {
-        addReward(15);
-        showFeedback("Correct subtraction! 🎉", "bg-emerald-100", "text-emerald-800");
-        setTimeout(nextRandomQuestion, 1600);
-      } else {
-        showFeedback("Review your subtraction columns!", "bg-rose-100", "text-rose-800");
-      }
-    }
-
-    // Module 8: Multiplication
-    function genMultiplication() {
-      const n1 = Math.floor(Math.random() * 200) + 20;
-      const n2 = Math.floor(Math.random() * 7) + 2;
-      const prod = n1 * n2;
-
-      document.getElementById('mulEquationDisplay').innerText = `${n1} × ${n2} = ?`;
-
-      ['mul-ans-th', 'mul-ans-h', 'mul-ans-t', 'mul-ans-u'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.value = '';
-      });
-
-      activeQuestionData = { prod };
-    }
-
-    function checkMultiplicationAnswer() {
-      const th = document.getElementById('mul-ans-th').value || '0';
-      const h = document.getElementById('mul-ans-h').value || '0';
-      const t = document.getElementById('mul-ans-t').value || '0';
-      const u = document.getElementById('mul-ans-u').value || '0';
-
-      const userProd = parseInt(`${th}${h}${t}${u}`, 10);
-
-      if(userProd === activeQuestionData.prod) {
-        addReward(15);
-        showFeedback("Awesome multiplication! 🎉", "bg-emerald-100", "text-emerald-800");
-        setTimeout(nextRandomQuestion, 1600);
-      } else {
-        showFeedback("Check your product!", "bg-rose-100", "text-rose-800");
-      }
-    }
-
-    // Module 9: Ascending & Descending Order
-    function genOrder() {
-      const isAsc = Math.random() > 0.5;
-      const nums = [];
-      while(nums.length < 5) {
-        const r = Math.floor(Math.random() * 95) + 5;
-        if(!nums.includes(r)) nums.push(r);
-      }
-
-      const expected = [...nums].sort((a,b) => isAsc ? a - b : b - a);
-
-      activeQuestionData = {
-        isAsc,
-        nums,
-        expected,
-        userSlots: new Array(5).fill(null)
-      };
-
-      document.getElementById('orderModeBadge').innerText = isAsc ? "Ascending (Smallest to Largest)" : "Descending (Largest to Smallest)";
-      renderOrderUI();
-    }
-
-    function renderOrderUI() {
-      const pool = document.getElementById('orderNumberPool');
-      pool.innerHTML = '';
-      activeQuestionData.nums.forEach(n => {
-        const isPlaced = activeQuestionData.userSlots.includes(n);
-        if(!isPlaced) {
-          const btn = document.createElement('button');
-          btn.className = "px-5 py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-black text-xl rounded-2xl shadow-md transition transform active:scale-95 animate-pop";
-          btn.innerText = n;
-          btn.onclick = () => placeOrderNumber(n);
-          pool.appendChild(btn);
+            document.getElementById('module-indicator').innerText = MODULES[currentModuleIndex].name;
         }
-      });
 
-      const slotsContainer = document.getElementById('orderSlotsContainer');
-      slotsContainer.innerHTML = '';
-      for(let i=0; i<5; i++) {
-        const val = activeQuestionData.userSlots[i];
-        const slot = document.createElement('div');
-        slot.className = "flex flex-col items-center gap-1";
-        slot.innerHTML = `
-          <div class="w-16 h-16 border-4 border-dashed border-slate-300 rounded-2xl flex items-center justify-center font-black text-2xl ${val ? 'bg-indigo-500 border-indigo-600 text-white shadow-md' : 'bg-slate-50 text-slate-300'} transition">
-            ${val !== null ? val : (i+1)}
-          </div>
-          <span class="text-xs font-bold text-slate-400">Slot ${i+1}</span>
-        `;
-        slotsContainer.appendChild(slot);
-      }
-    }
-
-    function placeOrderNumber(num) {
-      const idx = activeQuestionData.userSlots.indexOf(null);
-      if(idx !== -1) {
-        activeQuestionData.userSlots[idx] = num;
-        renderOrderUI();
-      }
-    }
-
-    function resetOrderSlots() {
-      activeQuestionData.userSlots = new Array(5).fill(null);
-      renderOrderUI();
-    }
-
-    function checkOrderAnswer() {
-      const isComplete = !activeQuestionData.userSlots.includes(null);
-      if(!isComplete) {
-        showFeedback("Fill all slots first!", "bg-amber-100", "text-amber-800");
-        return;
-      }
-
-      const isCorrect = activeQuestionData.userSlots.every((val, idx) => val === activeQuestionData.expected[idx]);
-      if(isCorrect) {
-        addReward(15);
-        showFeedback("Perfect ordering sequence! 🎉", "bg-emerald-100", "text-emerald-800");
-        setTimeout(nextRandomQuestion, 1600);
-      } else {
-        showFeedback("Check your order sequence!", "bg-rose-100", "text-rose-800");
-      }
-    }
-
-    // Gemini Question Integration
-    async function generateGeminiQuestion() {
-      showFeedback(" ✨ Gemini AI generating magic question...", "bg-purple-100", "text-purple-800");
-      
-      const prompts = {
-        wordCards: "Provide a single kid-friendly 3 or 4 letter word. Output ONLY JSON: {\"word\": \"cat\"}",
-        sentences: "Provide a simple sentence with a missing word for kids. Output ONLY JSON: {\"template\": \"The {blank} sat.\", \"answer\": \"cat\", \"options\": [\"cat\", \"cup\", \"car\"]}",
-        froggy: "Provide a simple addition equation under 15. Output ONLY JSON: {\"n1\": 3, \"n2\": 4, \"type\": \"add\"}",
-        thousands: "Provide a random 4 digit number. Output ONLY JSON: {\"num\": 2458}",
-        placeValue: "Provide a random 4 digit number. Output ONLY JSON: {\"num\": 3425}",
-        addition: "Provide two 3 digit addition numbers requiring carry. Output ONLY JSON: {\"n1\": 478, \"n2\": 385}",
-        subtraction: "Provide two 3 digit subtraction numbers requiring borrowing. Output ONLY JSON: {\"n1\": 524, \"n2\": 267}",
-        multiplication: "Provide a 2 or 3 digit number multiplied by a single digit (2-8). Output ONLY JSON: {\"n1\": 143, \"n2\": 4}",
-        order: "Provide 5 distinct numbers between 5 and 99. Output ONLY JSON: {\"nums\": [12, 45, 8, 92, 31]}"
-      };
-
-      try {
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-        
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompts[currentModule] }] }],
-            generationConfig: { responseMimeType: "application/json" }
-          })
-        });
-
-        const data = await response.json();
-        const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        
-        if(jsonText) {
-          const parsed = JSON.parse(jsonText);
-          applyGeminiQuestionData(parsed);
-          showFeedback("Magic Gemini question loaded! ✨", "bg-indigo-100", "text-indigo-800");
-        } else {
-          throw new Error("Invalid response");
+        function switchModule(index) {
+            if (currentModuleIndex === index) return;
+            currentModuleIndex = index;
+            renderTabs();
+            fetchNewQuestion();
         }
-      } catch (err) {
-        nextRandomQuestion();
-        showFeedback("Generated fresh magic question! ✨", "bg-sky-100", "text-sky-800");
-      }
-    }
 
-    function applyGeminiQuestionData(data) {
-      hideFeedback();
-      if(currentModule === 'wordCards' && data.word) {
-        document.getElementById('flashWordDisplay').innerText = data.word.toUpperCase();
-        activeQuestionData = { word: data.word };
-      } else if(currentModule === 'thousands' && data.num) {
-        activeQuestionData = { num: data.num };
-        document.getElementById('thousandsDisplay').innerText = data.num.toLocaleString();
-        document.getElementById('thousandsAudioText').value = data.num;
-      } else if(currentModule === 'sentences' && data.template) {
-        activeQuestionData = { ...data, selectedAnswer: null };
-        const sentenceHTML = data.template.replace('{blank}', `<span id="sentenceBlank" class="px-4 py-1 bg-white border-b-4 border-sky-400 rounded-xl text-sky-600 inline-block min-w-[100px] shadow-sm">???</span>`);
-        document.getElementById('sentenceDisplay').innerHTML = sentenceHTML;
-        const bank = document.getElementById('sentenceWordBank');
-        bank.innerHTML = '';
-        data.options.forEach(opt => {
-          const btn = document.createElement('button');
-          btn.className = "px-6 py-3 bg-white hover:bg-sky-50 text-slate-700 font-extrabold text-lg border-2 border-sky-200 rounded-2xl shadow-md transition";
-          btn.innerText = opt;
-          btn.onclick = () => selectSentenceOption(opt);
-          bank.appendChild(btn);
-        });
-      } else {
-        nextRandomQuestion();
-      }
-    }
+        /**
+         * Speech Synthesis Helper
+         */
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("Speech synthesis not supported on this device.", "bg-slate-700");
+            }
+        }
 
-    function addReward(pts) {
-      score += pts;
-      stars += 1;
-      document.getElementById('scoreCount').innerText = `${score} pts`;
-      document.getElementById('starCount').innerText = stars;
-    }
+        /**
+         * Award Stars & Handle Success
+         */
+        function handleCorrectAnswer(customMsg = "Super Job! 🎉") {
+            starPoints += 10;
+            document.getElementById('star-count').innerText = starPoints;
+            showToast(`${customMsg} (+10 Stars)`, "bg-emerald-500");
+            
+            // Automatically trigger Gemini API call for next question
+            setTimeout(() => {
+                fetchNewQuestion(false);
+            }, 1200);
+        }
 
-    function showFeedback(msg, bg, txt) {
-      const banner = document.getElementById('feedbackBanner');
-      banner.className = `p-4 rounded-2xl text-center font-extrabold text-lg animate-pop ${bg} ${txt}`;
-      banner.innerText = msg;
-      banner.classList.remove('hidden');
-    }
+        function showToast(msg, bgClass = "bg-indigo-600") {
+            const toast = document.getElementById('toast');
+            toast.className = `fixed bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl text-white font-bold text-base shadow-xl transition-all flex items-center gap-2 ${bgClass}`;
+            toast.innerHTML = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
 
-    function hideFeedback() {
-      document.getElementById('feedbackBanner').classList.add('hidden');
-    }
-  </script>
+        /**
+         * Main Module Renderer Router
+         */
+        function renderCurrentModule() {
+            const stage = document.getElementById('module-stage');
+            const data = currentQuestionData;
+            const modId = MODULES[currentModuleIndex].id;
+
+            if (!data) return;
+
+            switch (modId) {
+                case 'flashcards':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-lg">
+                            <span class="bg-amber-100 text-amber-800 font-bold px-4 py-1 rounded-full text-xs uppercase tracking-wider">
+                                ${data.category || 'Vocabulary'}
+                            </span>
+                            <div class="text-5xl md:text-6xl font-fredoka font-bold text-indigo-700 tracking-wider text-center py-4 bg-indigo-50 border-2 border-indigo-100 w-full rounded-2xl shadow-inner">
+                                ${data.word}
+                            </div>
+                            <p class="text-slate-500 italic text-sm text-center font-semibold">"${data.hint || 'Read the word aloud!'}"</p>
+                            
+                            <!-- Speech Button -->
+                            <button onclick="speakText('${data.word}')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 shadow transition-all active:scale-95">
+                                <i class="fa-solid fa-volume-high text-lg"></i> Listen Word
+                            </button>
+
+                            <hr class="w-full border-slate-200 my-2">
+
+                            <!-- Parent Verification Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 w-full">
+                                <button onclick="handleCorrectAnswer('Great Reading! 🎉')" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-2xl shadow-md transition-all active:scale-95 text-center">
+                                    Said It Right! 🎉
+                                </button>
+                                <button onclick="showToast('Keep practicing! Try again 🔄', 'bg-amber-500')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-4 rounded-2xl transition-all active:scale-95 text-center">
+                                    Try Again 🔄
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'sentences':
+                    const optionsHtml = (data.options || []).map(opt => `
+                        <button onclick="checkSentenceAnswer('${opt}', '${data.blank}')" class="bg-indigo-50 border-2 border-indigo-200 hover:bg-indigo-600 hover:text-white text-indigo-800 font-bold text-lg px-6 py-3 rounded-2xl shadow-sm transition-all active:scale-95">
+                            ${opt}
+                        </button>
+                    `).join('');
+
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-xl">
+                            <div class="text-xl md:text-2xl font-bold text-slate-800 text-center leading-relaxed bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 w-full shadow-inner">
+                                ${data.text.replace('___', '<span class="underline decoration-4 decoration-indigo-500 text-indigo-600 px-2">___</span>')}
+                            </div>
+
+                            <button onclick="speakText('${data.full}')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-4 py-2 rounded-xl flex items-center gap-2 text-sm shadow transition-all">
+                                <i class="fa-solid fa-volume-high"></i> Read Full Sentence
+                            </button>
+
+                            <div class="w-full">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Choose the missing word:</p>
+                                <div class="flex flex-wrap justify-center gap-3">
+                                    ${optionsHtml}
+                                </div>
+                            </div>
+
+                            <hr class="w-full border-slate-200 my-1">
+
+                            <div class="flex gap-3 w-full">
+                                <button onclick="handleCorrectAnswer('Parent Verified! ⭐')" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-3 rounded-xl shadow transition-all text-sm">
+                                    Parent Verified! 🎉
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'froggy':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-2xl">
+                            <!-- Equation -->
+                            <div class="text-4xl md:text-5xl font-fredoka font-bold text-indigo-700 bg-indigo-50 px-8 py-3 rounded-2xl border-2 border-indigo-100 shadow-inner">
+                                ${data.start} ${data.type} ${data.jump} = ?
+                            </div>
+
+                            <!-- Number Line Canvas Container -->
+                            <div class="w-full overflow-x-auto py-4">
+                                <div class="min-w-[500px] flex justify-between items-end relative px-4 pt-12 pb-4 bg-emerald-50 rounded-2xl border-2 border-emerald-200">
+                                    ${Array.from({ length: 21 }, (_, i) => `
+                                        <div class="flex flex-col items-center relative group">
+                                            ${i === data.result ? '<div class="absolute -top-10 text-2xl animate-bounce">🪷</div>' : ''}
+                                            <button onclick="checkFroggyAnswer(${i}, ${data.result})" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                                                i === data.start ? 'bg-indigo-600 text-white ring-4 ring-indigo-200' : 'bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-200'
+                                            }">
+                                                ${i}
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-400 font-bold uppercase">Click on the correct Lilypad number where Froggy lands!</p>
+                        </div>
+                    `;
+                    break;
+
+                case 'thousands':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-lg">
+                            <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Read this large number out loud</span>
+                            
+                            <div class="text-6xl font-fredoka font-bold text-indigo-600 tracking-widest bg-slate-50 border-2 border-slate-200 px-10 py-6 rounded-3xl shadow-inner">
+                                ${data.number.toLocaleString()}
+                            </div>
+
+                            <button onclick="speakText('${data.number}')" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 shadow transition-all">
+                                <i class="fa-solid fa-volume-high"></i> Listen Pronunciation
+                            </button>
+
+                            <p class="text-slate-500 text-center font-medium text-sm">Word Form: "<span class="font-bold text-slate-700">${data.wordFormat || data.number}</span>"</p>
+
+                            <hr class="w-full border-slate-200">
+
+                            <!-- Parent Verification -->
+                            <div class="flex gap-3 w-full">
+                                <button onclick="handleCorrectAnswer('Awesome Number Reading! 🎉')" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-2xl shadow-md transition-all active:scale-95 text-center">
+                                    Said It Right! 🎉
+                                </button>
+                                <button onclick="showToast('Try reading once more! 🔄', 'bg-amber-500')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-4 rounded-2xl transition-all active:scale-95 text-center">
+                                    Try Again 🔄
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'placevalue':
+                    // Reset user counts on new target
+                    pvUserCounts = { thousands: 0, hundreds: 0, tens: 0, units: 0 };
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-xl">
+                            <div class="text-center">
+                                <span class="text-xs font-bold uppercase text-slate-400">Target Number</span>
+                                <div class="text-4xl font-fredoka font-bold text-indigo-700">${data.number}</div>
+                            </div>
+
+                            <!-- 4 Columns Stack Representation -->
+                            <div class="grid grid-cols-4 gap-2 md:gap-4 w-full bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                                ${['thousands', 'hundreds', 'tens', 'units'].map(col => `
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-xs font-bold uppercase text-slate-500 mb-2">${col}</span>
+                                        <div id="stack-${col}" class="block-stack border-b-2 border-slate-300 w-full mb-3">
+                                            <!-- Dynamic Blocks -->
+                                        </div>
+                                        <div class="flex gap-1">
+                                            <button onclick="updatePVStack('${col}', 1, ${data.thousands}, ${data.hundreds}, ${data.tens}, ${data.units})" class="w-8 h-8 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center hover:bg-emerald-600 shadow">+</button>
+                                            <button onclick="updatePVStack('${col}', -1, ${data.thousands}, ${data.hundreds}, ${data.tens}, ${data.units})" class="w-8 h-8 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center hover:bg-rose-600 shadow">-</button>
+                                        </div>
+                                        <span id="count-${col}" class="font-fredoka text-lg mt-1 font-bold text-slate-700">0</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <button onclick="checkPlaceValueAnswer(${data.thousands}, ${data.hundreds}, ${data.tens}, ${data.units})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md transition-all active:scale-95">
+                                Check Representation
+                            </button>
+                        </div>
+                    `;
+                    break;
+
+                case 'addition':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-md">
+                            <span class="text-xs font-bold uppercase text-slate-400">Solve Addition with Carry</span>
+                            
+                            <!-- Math Grid 5-Column Right to Left -->
+                            <div class="bg-indigo-50/50 p-6 rounded-3xl border-2 border-indigo-100 w-full">
+                                <div class="grid grid-cols-5 gap-2 text-center items-center font-fredoka font-bold text-xl">
+                                    <!-- Header Column labels -->
+                                    <span class="text-xs text-slate-400"></span>
+                                    <span class="text-xs text-slate-400">Th</span>
+                                    <span class="text-xs text-slate-400">H</span>
+                                    <span class="text-xs text-slate-400">T</span>
+                                    <span class="text-xs text-slate-400">U</span>
+
+                                    <!-- Carry Input Row -->
+                                    <span class="text-xs font-bold text-amber-600">Carry</span>
+                                    <input type="text" id="add-c3" maxlength="1" class="w-10 h-8 text-center bg-amber-100 border border-amber-300 rounded-lg text-sm text-amber-900 mx-auto">
+                                    <input type="text" id="add-c2" maxlength="1" class="w-10 h-8 text-center bg-amber-100 border border-amber-300 rounded-lg text-sm text-amber-900 mx-auto">
+                                    <input type="text" id="add-c1" maxlength="1" class="w-10 h-8 text-center bg-amber-100 border border-amber-300 rounded-lg text-sm text-amber-900 mx-auto">
+                                    <span class="text-xs text-slate-300">-</span>
+
+                                    <!-- Addend 1 -->
+                                    <span></span>
+                                    ${String(data.num1).padStart(4, ' ').split('').map(d => `<span>${d}</span>`).join('')}
+
+                                    <!-- Addend 2 with Plus Sign -->
+                                    <span class="text-indigo-600">+</span>
+                                    ${String(data.num2).padStart(4, ' ').split('').map(d => `<span>${d}</span>`).join('')}
+                                </div>
+
+                                <hr class="border-t-2 border-slate-800 my-3">
+
+                                <!-- Answer Input Row -->
+                                <div class="grid grid-cols-5 gap-2 text-center">
+                                    <span class="text-xs font-bold text-indigo-600 self-center">Ans</span>
+                                    <input type="text" id="add-a3" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto focus:border-indigo-600 outline-none">
+                                    <input type="text" id="add-a2" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto focus:border-indigo-600 outline-none">
+                                    <input type="text" id="add-a1" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto focus:border-indigo-600 outline-none">
+                                    <input type="text" id="add-a0" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto focus:border-indigo-600 outline-none">
+                                </div>
+                            </div>
+
+                            <button onclick="checkAdditionAnswer(${data.sum})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md transition-all active:scale-95">
+                                Check Answer
+                            </button>
+                        </div>
+                    `;
+                    break;
+
+                case 'subtraction':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-md">
+                            <span class="text-xs font-bold uppercase text-slate-400">Solve Subtraction with Borrow</span>
+                            
+                            <div class="bg-indigo-50/50 p-6 rounded-3xl border-2 border-indigo-100 w-full">
+                                <div class="grid grid-cols-5 gap-2 text-center items-center font-fredoka font-bold text-xl">
+                                    <!-- Header Column labels -->
+                                    <span class="text-xs text-slate-400"></span>
+                                    <span class="text-xs text-slate-400">Th</span>
+                                    <span class="text-xs text-slate-400">H</span>
+                                    <span class="text-xs text-slate-400">T</span>
+                                    <span class="text-xs text-slate-400">U</span>
+
+                                    <!-- Borrow Indicator Row -->
+                                    <span class="text-xs font-bold text-rose-600">Borrow</span>
+                                    <input type="text" id="sub-b3" maxlength="2" class="w-10 h-8 text-center bg-rose-100 border border-rose-300 rounded-lg text-xs text-rose-900 mx-auto">
+                                    <input type="text" id="sub-b2" maxlength="2" class="w-10 h-8 text-center bg-rose-100 border border-rose-300 rounded-lg text-xs text-rose-900 mx-auto">
+                                    <input type="text" id="sub-b1" maxlength="2" class="w-10 h-8 text-center bg-rose-100 border border-rose-300 rounded-lg text-xs text-rose-900 mx-auto">
+                                    <input type="text" id="sub-b0" maxlength="2" class="w-10 h-8 text-center bg-rose-100 border border-rose-300 rounded-lg text-xs text-rose-900 mx-auto">
+
+                                    <!-- Minuend -->
+                                    <span></span>
+                                    ${String(data.minuend).padStart(4, ' ').split('').map(d => `<span>${d}</span>`).join('')}
+
+                                    <!-- Subtrahend -->
+                                    <span class="text-rose-600">-</span>
+                                    ${String(data.subtrahend).padStart(4, ' ').split('').map(d => `<span>${d}</span>`).join('')}
+                                </div>
+
+                                <hr class="border-t-2 border-slate-800 my-3">
+
+                                <!-- Result Row -->
+                                <div class="grid grid-cols-5 gap-2 text-center">
+                                    <span class="text-xs font-bold text-indigo-600 self-center">Ans</span>
+                                    <input type="text" id="sub-a3" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto">
+                                    <input type="text" id="sub-a2" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto">
+                                    <input type="text" id="sub-a1" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto">
+                                    <input type="text" id="sub-a0" maxlength="1" class="w-10 h-12 text-center font-fredoka text-xl bg-white border-2 border-indigo-200 rounded-xl mx-auto">
+                                </div>
+                            </div>
+
+                            <button onclick="checkSubtractionAnswer(${data.difference})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md transition-all active:scale-95">
+                                Check Answer
+                            </button>
+                        </div>
+                    `;
+                    break;
+
+                case 'multiplication':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-lg">
+                            <span class="text-xs font-bold uppercase text-slate-400">Horizontal Multiplication</span>
+                            
+                            <div class="flex items-center justify-center gap-3 bg-indigo-50 p-6 rounded-3xl border-2 border-indigo-100 w-full shadow-inner font-fredoka text-3xl md:text-4xl font-bold text-slate-800">
+                                <span>${data.factor1}</span>
+                                <span class="text-indigo-600">×</span>
+                                <span>${data.factor2}</span>
+                                <span>=</span>
+                                <input type="number" id="mult-input" class="w-32 h-14 text-center bg-white border-2 border-indigo-300 rounded-2xl text-indigo-700 outline-none focus:border-indigo-600" placeholder="?">
+                            </div>
+
+                            <button onclick="checkMultiplicationAnswer(${data.product})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md transition-all active:scale-95">
+                                Submit Answer
+                            </button>
+                        </div>
+                    `;
+                    break;
+
+                case 'ordering':
+                    stage.innerHTML = `
+                        <div class="flex flex-col items-center gap-6 w-full max-w-xl">
+                            <div class="text-center">
+                                <span class="text-xs font-bold uppercase text-slate-400">Order numbers in <strong class="text-indigo-600 uppercase">${data.type}</strong> order</span>
+                                <div class="flex gap-2 justify-center mt-2 flex-wrap">
+                                    ${data.numbers.map(n => `<span class="bg-slate-100 border border-slate-300 px-3 py-1 rounded-xl font-bold text-slate-700">${n}</span>`).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Staircase Visual Container -->
+                            <div class="flex items-end justify-center gap-2 w-full h-48 bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                                ${Array.from({ length: 5 }, (_, i) => `
+                                    <div class="flex-1 flex flex-col items-center justify-end h-full">
+                                        <input type="number" id="stair-${i}" class="w-full h-12 text-center font-fredoka font-bold text-indigo-700 bg-white border-2 border-indigo-200 rounded-xl mb-1 focus:border-indigo-600 outline-none" placeholder="#${i+1}">
+                                        <div class="w-full bg-indigo-300 rounded-t-lg transition-all" style="height: ${(i + 1) * 18}%;"></div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <button onclick="checkOrderingAnswer(${JSON.stringify(data.sorted).replace(/"/g, '&quot;')})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md transition-all active:scale-95">
+                                Verify Order
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        // Module 2 Helper
+        function checkSentenceAnswer(selected, correct) {
+            if (selected.toLowerCase() === correct.toLowerCase()) {
+                handleCorrectAnswer("Correct Word! 🎯");
+            } else {
+                showToast("Not quite right, try again!", "bg-rose-500");
+            }
+        }
+
+        // Module 3 Helper
+        function checkFroggyAnswer(selected, correct) {
+            if (selected === correct) {
+                handleCorrectAnswer("Froggy landed safely! 🐸");
+            } else {
+                showToast("Froggy missed! Try another lilypad.", "bg-rose-500");
+            }
+        }
+
+        // Module 5 Helper
+        function updatePVStack(col, delta, targetT, targetH, targetTe, targetU) {
+            pvUserCounts[col] = Math.max(0, Math.min(9, pvUserCounts[col] + delta));
+            document.getElementById(`count-${col}`).innerText = pvUserCounts[col];
+
+            const stack = document.getElementById(`stack-${col}`);
+            stack.innerHTML = '';
+            for (let i = 0; i < pvUserCounts[col]; i++) {
+                const block = document.createElement('div');
+                if (col === 'thousands') block.className = 'thousand-cube';
+                else if (col === 'hundreds') block.className = 'hundred-flat';
+                else if (col === 'tens') block.className = 'ten-rod';
+                else block.className = 'unit-cube';
+                stack.appendChild(block);
+            }
+        }
+
+        function checkPlaceValueAnswer(t, h, te, u) {
+            if (pvUserCounts.thousands === t &&
+                pvUserCounts.hundreds === h &&
+                pvUserCounts.tens === te &&
+                pvUserCounts.units === u) {
+                handleCorrectAnswer("Perfect Block Representation! 🧊");
+            } else {
+                showToast("Counts do not match target number yet!", "bg-rose-500");
+            }
+        }
+
+        // Module 6 Helper
+        function checkAdditionAnswer(expectedSum) {
+            const a3 = document.getElementById('add-a3').value || '0';
+            const a2 = document.getElementById('add-a2').value || '0';
+            const a1 = document.getElementById('add-a1').value || '0';
+            const a0 = document.getElementById('add-a0').value || '0';
+            
+            const userSum = parseInt(`${a3}${a2}${a1}${a0}`, 10);
+            if (userSum === expectedSum) {
+                handleCorrectAnswer("Addition Correct! ➕");
+            } else {
+                showToast("Check your addition columns again!", "bg-rose-500");
+            }
+        }
+
+        // Module 7 Helper
+        function checkSubtractionAnswer(expectedDiff) {
+            const a3 = document.getElementById('sub-a3').value || '0';
+            const a2 = document.getElementById('sub-a2').value || '0';
+            const a1 = document.getElementById('sub-a1').value || '0';
+            const a0 = document.getElementById('sub-a0').value || '0';
+
+            const userDiff = parseInt(`${a3}${a2}${a1}${a0}`, 10);
+            if (userDiff === expectedDiff) {
+                handleCorrectAnswer("Subtraction Correct! ➖");
+            } else {
+                showToast("Check your borrowing & math!", "bg-rose-500");
+            }
+        }
+
+        // Module 8 Helper
+        function checkMultiplicationAnswer(expectedProduct) {
+            const val = parseInt(document.getElementById('mult-input').value, 10);
+            if (val === expectedProduct) {
+                handleCorrectAnswer("Multiplication Correct! ✖️");
+            } else {
+                showToast("Incorrect product, try calculating again!", "bg-rose-500");
+            }
+        }
+
+        // Module 9 Helper
+        function checkOrderingAnswer(expectedSorted) {
+            const userSorted = [];
+            for (let i = 0; i < 5; i++) {
+                const val = parseInt(document.getElementById(`stair-${i}`).value, 10);
+                userSorted.push(val);
+            }
+
+            const isCorrect = userSorted.every((v, idx) => v === expectedSorted[idx]);
+            if (isCorrect) {
+                handleCorrectAnswer("Numbers ordered perfectly! 📶");
+            } else {
+                showToast("Order is incorrect, check staircase numbers!", "bg-rose-500");
+            }
+        }
+
+        window.onload = () => {
+            renderTabs();
+            fetchNewQuestion();
+        };
+    </script>
 </body>
 </html>
