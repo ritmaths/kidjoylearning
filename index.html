@@ -1,0 +1,1160 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidJoy - Interactive Learning Playground</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 50%, #fbcfe8 100%);
+            min-height: 100vh;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka One', cursive;
+        }
+        @keyframes pop-in {
+            0% { transform: scale(0.6); opacity: 0; }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: pop-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-bounce-subtle {
+            animation: bounce-subtle 2s infinite;
+        }
+        /* Hide scrollbars for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4 text-slate-800 antialiased selection:bg-amber-200">
+
+    <!-- TOP HEADER NAVBAR -->
+    <header class="max-w-6xl mx-auto bg-white/90 backdrop-blur-md rounded-3xl shadow-lg p-3 sm:p-4 mb-4 border-4 border-amber-200 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-amber-400 to-amber-500 text-white text-2xl sm:text-3xl p-3 rounded-2xl shadow-md rotate-[-4deg]">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h1 class="font-fredoka text-2xl sm:text-3xl text-amber-600 tracking-wide">KidJoy Learning</h1>
+                <p class="text-xs sm:text-sm font-bold text-slate-500">Interactive Math & Reading Playground</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <!-- Stars Count -->
+            <div class="bg-amber-100 text-amber-800 px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl font-bold flex items-center gap-2 border-2 border-amber-300 shadow-sm">
+                <i class="fa-solid fa-star text-amber-500 text-xl sm:text-2xl animate-spin-slow"></i>
+                <span id="star-count" class="text-xl sm:text-2xl font-fredoka">0</span>
+            </div>
+
+            <!-- Gemini AI Magic Button -->
+            <button onclick="generateAIQuestion()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-3 sm:px-5 py-2 sm:py-2.5 rounded-2xl shadow-md flex items-center gap-2 transition active:scale-95 text-xs sm:text-sm border-b-4 border-purple-900">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-base sm:text-lg"></i>
+                <span class="font-fredoka">AI Question</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MODULE CATEGORY SELECTOR -->
+    <div class="max-w-6xl mx-auto mb-4 bg-white/80 backdrop-blur-sm p-2 rounded-3xl shadow-md border-2 border-slate-200">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 py-1">Choose Activity:</div>
+        <div class="flex overflow-x-auto gap-2 p-1 no-scrollbar">
+            
+            <!-- READING TRACK -->
+            <button onclick="switchTab('flashcards')" id="tab-flashcards" class="tab-btn active bg-sky-500 text-white font-fredoka px-4 py-2.5 rounded-2xl shadow-md whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-sky-700">
+                <i class="fa-solid fa-font text-lg"></i> Sight Words
+            </button>
+            <button onclick="switchTab('sentences')" id="tab-sentences" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-book-open text-sky-500 text-lg"></i> Sentences
+            </button>
+
+            <div class="w-px h-8 bg-slate-300 my-auto"></div>
+
+            <!-- MATHEMATICS TRACK -->
+            <button onclick="switchTab('froggy')" id="tab-froggy" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-frog text-emerald-500 text-lg"></i> Froggy Jump
+            </button>
+            <button onclick="switchTab('thousands')" id="tab-thousands" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-calculator text-indigo-500 text-lg"></i> Thousands Reader
+            </button>
+            <button onclick="switchTab('placevalue')" id="tab-placevalue" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-cubes text-amber-500 text-lg"></i> Place Value
+            </button>
+            <button onclick="switchTab('addition')" id="tab-addition" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-plus text-rose-500 text-lg"></i> Carry Addition
+            </button>
+            <button onclick="switchTab('subtraction')" id="tab-subtraction" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-minus text-purple-500 text-lg"></i> Borrow Subtraction
+            </button>
+            <button onclick="switchTab('multiplication')" id="tab-multiplication" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-xmark text-orange-500 text-lg"></i> Multiplication
+            </button>
+            <button onclick="switchTab('sorting')" id="tab-sorting" class="tab-btn bg-white text-slate-700 hover:bg-slate-100 font-fredoka px-4 py-2.5 rounded-2xl whitespace-nowrap flex items-center gap-2 transition text-sm sm:text-base border-b-4 border-slate-300">
+                <i class="fa-solid fa-arrow-down-short-wide text-teal-500 text-lg"></i> Ascend / Descend
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE CONTENT CONTAINERS -->
+    <main class="max-w-6xl mx-auto">
+
+        <!-- 1. SIGHT WORDS FLASH CARDS -->
+        <section id="sec-flashcards" class="tab-content bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-sky-200">
+            <div class="text-center mb-4">
+                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Reading Module 1</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-sky-600 mt-1">Sight Word Reader</h2>
+                <p class="text-slate-500 text-sm">Read the flash card out loud. Parent verifies if spoken correctly!</p>
+            </div>
+
+            <div class="max-w-lg mx-auto bg-gradient-to-b from-sky-50 to-blue-50 border-4 border-sky-300 rounded-3xl p-8 text-center shadow-lg mb-6 relative">
+                <!-- Word Display -->
+                <div id="flashcard-word" class="text-6xl sm:text-8xl font-fredoka text-sky-700 tracking-wider my-6 select-none animate-pop">
+                    CAT
+                </div>
+
+                <!-- Text-To-Speech Listen Button -->
+                <button onclick="speakText(currentWord)" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition active:scale-95 inline-flex items-center gap-2 text-base sm:text-lg border-b-4 border-sky-700">
+                    <i class="fa-solid fa-volume-high text-xl"></i> Listen Sound
+                </button>
+            </div>
+
+            <!-- Parent Verification Box (No option buttons for kids) -->
+            <div class="max-w-lg mx-auto bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 text-center mb-4">
+                <p class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-3"><i class="fa-solid fa-user-shield"></i> Parent Verification Check</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="parentVerifyWord(false)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-3 px-4 rounded-xl border border-rose-300 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Try Again 🔄
+                    </button>
+                    <button onclick="parentVerifyWord(true)" class="bg-emerald-500 hover:bg-emerald-600 text-white font-fredoka py-3 px-4 rounded-xl shadow-md border-b-4 border-emerald-700 transition flex items-center justify-center gap-2 text-base sm:text-lg">
+                        Got It Right! 🎉
+                    </button>
+                </div>
+            </div>
+
+            <div id="flashcards-feedback" class="text-center font-bold text-xl min-h-[32px]"></div>
+        </section>
+
+        <!-- 2. SIMPLE SENTENCE READER & BUILDER -->
+        <section id="sec-sentences" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-indigo-200">
+            <div class="text-center mb-6">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Reading Module 2</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-indigo-600 mt-1">Simple Sentence Builder</h2>
+                <p class="text-slate-500 text-sm">Listen to the sentence, then tap the words in the correct order!</p>
+            </div>
+
+            <!-- Target Sentence & Audio -->
+            <div class="max-w-xl mx-auto bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-6 text-center mb-6">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <button onclick="speakSentence()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-3 rounded-full shadow transition active:scale-95">
+                        <i class="fa-solid fa-volume-high text-xl"></i>
+                    </button>
+                    <span class="text-sm font-bold text-indigo-800">Tap speaker to hear the sentence</span>
+                </div>
+                <!-- Sentence Construction Slot Container -->
+                <div id="sentence-slots" class="min-h-[70px] bg-white border-2 border-dashed border-indigo-300 rounded-xl p-3 flex flex-wrap items-center justify-center gap-2">
+                    <!-- Word tiles appear here as clicked -->
+                </div>
+            </div>
+
+            <!-- Scrambled Word Choices -->
+            <div class="max-w-xl mx-auto text-center mb-6">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tap words below to build:</p>
+                <div id="sentence-pool" class="flex flex-wrap items-center justify-center gap-3">
+                    <!-- Scrambled word buttons rendered here -->
+                </div>
+            </div>
+
+            <!-- Sentence Actions & Feedback -->
+            <div class="max-w-xl mx-auto flex items-center justify-between gap-4">
+                <button onclick="resetSentence()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+                <div id="sentence-feedback" class="font-bold text-lg text-center flex-1"></div>
+                <button onclick="nextSentenceQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-fredoka px-6 py-2 rounded-xl border-b-4 border-indigo-900 shadow">
+                    Next Sentence <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. FROGGY JUMP NUMBER LINE -->
+        <section id="sec-froggy" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-emerald-200">
+            <div class="text-center mb-6">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 1</span>
+                <!-- BIG FONT EQUATION ASKED AT TOP -->
+                <div class="mt-2 text-4xl sm:text-6xl md:text-7xl font-fredoka text-emerald-600 tracking-wider bg-emerald-50 py-4 px-6 rounded-3xl border-4 border-emerald-300 inline-block shadow-inner" id="frog-equation">
+                    4 + 5 = ?
+                </div>
+                <p class="text-slate-500 mt-2 font-medium">Click a lilypad or jump the frog to find the answer on the number line!</p>
+            </div>
+
+            <!-- Interactive Froggy Number Line -->
+            <div class="relative overflow-x-auto py-10 px-4 bg-sky-50 rounded-3xl border-2 border-sky-100 mb-6 min-h-[220px] flex items-end no-scrollbar">
+                <div id="number-line" class="flex items-center justify-between min-w-[750px] w-full relative px-6">
+                    <!-- Lilypad nodes rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Controls & Feedback -->
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <button onclick="resetFrog()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Frog
+                </button>
+                <div id="frog-feedback" class="text-xl font-bold text-center min-h-[30px] flex-1"></div>
+                <button onclick="nextFrogQuestion()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-fredoka px-6 py-2.5 rounded-xl shadow-lg border-b-4 border-emerald-700 flex items-center gap-2 text-lg">
+                    <span>Next Question</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. READ NUMBERS UP TO THOUSANDS -->
+        <section id="sec-thousands" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-indigo-200">
+            <div class="text-center mb-6">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 2</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-indigo-600 mt-1">Read Thousands Numbers</h2>
+                <p class="text-slate-500 text-sm">Spin the digits or click speak to practice large numbers!</p>
+            </div>
+
+            <div class="max-w-xl mx-auto bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-6 border-4 border-indigo-200 shadow-lg text-center mb-6">
+                <!-- Large Digit Spinner Display -->
+                <div class="flex items-center justify-center gap-2 sm:gap-4 my-6">
+                    <div class="flex flex-col items-center">
+                        <span class="text-xs font-bold text-indigo-400 uppercase">Th</span>
+                        <div id="digit-3" class="w-14 h-20 sm:w-18 sm:h-24 bg-white border-4 border-indigo-400 rounded-2xl flex items-center justify-center font-fredoka text-4xl sm:text-6xl text-indigo-700 shadow-md">4</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xs font-bold text-indigo-400 uppercase">H</span>
+                        <div id="digit-2" class="w-14 h-20 sm:w-18 sm:h-24 bg-white border-4 border-indigo-400 rounded-2xl flex items-center justify-center font-fredoka text-4xl sm:text-6xl text-indigo-700 shadow-md">2</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xs font-bold text-indigo-400 uppercase">T</span>
+                        <div id="digit-1" class="w-14 h-20 sm:w-18 sm:h-24 bg-white border-4 border-indigo-400 rounded-2xl flex items-center justify-center font-fredoka text-4xl sm:text-6xl text-indigo-700 shadow-md">5</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xs font-bold text-indigo-400 uppercase">O</span>
+                        <div id="digit-0" class="w-14 h-20 sm:w-18 sm:h-24 bg-white border-4 border-indigo-400 rounded-2xl flex items-center justify-center font-fredoka text-4xl sm:text-6xl text-indigo-700 shadow-md">8</div>
+                    </div>
+                </div>
+
+                <!-- Word Spelled Out -->
+                <div id="thousands-words" class="text-lg sm:text-2xl font-bold text-indigo-900 bg-white rounded-2xl p-4 border-2 border-indigo-200 shadow-inner mb-4">
+                    Four thousand two hundred fifty-eight
+                </div>
+
+                <button onclick="speakThousandsNumber()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-fredoka py-3 px-6 rounded-2xl shadow-md border-b-4 border-indigo-900 text-base sm:text-lg inline-flex items-center gap-2">
+                    <i class="fa-solid fa-volume-high text-xl"></i> Speak Number Out Loud
+                </button>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button onclick="generateRandomThousands()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-fredoka px-6 py-3 rounded-xl shadow-md border-b-4 border-indigo-800 text-lg">
+                    🎲 Random Number
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. PLACE VALUE DECOMPOSITION WITH +/- CONTROLS AND VERTICAL STACKS -->
+        <section id="sec-placevalue" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-amber-200">
+            <div class="text-center mb-6">
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 3</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-amber-600 mt-1">Place Value Decomposition</h2>
+                <div class="mt-2 text-2xl sm:text-4xl font-fredoka text-slate-700">
+                    Build Target: <span id="pv-target" class="text-amber-600 underline">2,435</span>
+                </div>
+            </div>
+
+            <!-- Vertical Columns with Plus/Minus Controls -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                <!-- Thousands -->
+                <div class="bg-amber-50 rounded-2xl p-3 sm:p-4 border-2 border-amber-200 flex flex-col items-center">
+                    <span class="font-fredoka text-amber-800 text-base sm:text-lg">Thousands</span>
+                    <div class="flex items-center gap-2 my-2">
+                        <button onclick="changePV('thousands', -1)" class="w-9 h-9 bg-amber-200 hover:bg-amber-300 text-amber-800 rounded-full font-bold text-2xl flex items-center justify-center shadow">-</button>
+                        <span id="pv-count-thousands" class="text-xl sm:text-2xl font-fredoka text-slate-800 w-6 text-center">0</span>
+                        <button onclick="changePV('thousands', 1)" class="w-9 h-9 bg-amber-500 hover:bg-amber-600 text-white rounded-full font-bold text-2xl flex items-center justify-center shadow">+</button>
+                    </div>
+                    <!-- Vertical Stack Container -->
+                    <div id="pv-stack-thousands" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto bg-white rounded-xl p-2 border border-amber-200 flex flex-col-reverse items-center gap-1 no-scrollbar"></div>
+                </div>
+
+                <!-- Hundreds -->
+                <div class="bg-sky-50 rounded-2xl p-3 sm:p-4 border-2 border-sky-200 flex flex-col items-center">
+                    <span class="font-fredoka text-sky-800 text-base sm:text-lg">Hundreds</span>
+                    <div class="flex items-center gap-2 my-2">
+                        <button onclick="changePV('hundreds', -1)" class="w-9 h-9 bg-sky-200 hover:bg-sky-300 text-sky-800 rounded-full font-bold text-2xl flex items-center justify-center shadow">-</button>
+                        <span id="pv-count-hundreds" class="text-xl sm:text-2xl font-fredoka text-slate-800 w-6 text-center">0</span>
+                        <button onclick="changePV('hundreds', 1)" class="w-9 h-9 bg-sky-500 hover:bg-sky-600 text-white rounded-full font-bold text-2xl flex items-center justify-center shadow">+</button>
+                    </div>
+                    <div id="pv-stack-hundreds" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto bg-white rounded-xl p-2 border border-sky-200 flex flex-col-reverse items-center gap-1 no-scrollbar"></div>
+                </div>
+
+                <!-- Tens -->
+                <div class="bg-emerald-50 rounded-2xl p-3 sm:p-4 border-2 border-emerald-200 flex flex-col items-center">
+                    <span class="font-fredoka text-emerald-800 text-base sm:text-lg">Tens</span>
+                    <div class="flex items-center gap-2 my-2">
+                        <button onclick="changePV('tens', -1)" class="w-9 h-9 bg-emerald-200 hover:bg-emerald-300 text-emerald-800 rounded-full font-bold text-2xl flex items-center justify-center shadow">-</button>
+                        <span id="pv-count-tens" class="text-xl sm:text-2xl font-fredoka text-slate-800 w-6 text-center">0</span>
+                        <button onclick="changePV('tens', 1)" class="w-9 h-9 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-bold text-2xl flex items-center justify-center shadow">+</button>
+                    </div>
+                    <div id="pv-stack-tens" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto bg-white rounded-xl p-2 border border-emerald-200 flex flex-col-reverse items-center gap-1 no-scrollbar"></div>
+                </div>
+
+                <!-- Ones / Units -->
+                <div class="bg-rose-50 rounded-2xl p-3 sm:p-4 border-2 border-rose-200 flex flex-col items-center">
+                    <span class="font-fredoka text-rose-800 text-base sm:text-lg">Units / Ones</span>
+                    <div class="flex items-center gap-2 my-2">
+                        <button onclick="changePV('ones', -1)" class="w-9 h-9 bg-rose-200 hover:bg-rose-300 text-rose-800 rounded-full font-bold text-2xl flex items-center justify-center shadow">-</button>
+                        <span id="pv-count-ones" class="text-xl sm:text-2xl font-fredoka text-slate-800 w-6 text-center">0</span>
+                        <button onclick="changePV('ones', 1)" class="w-9 h-9 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-bold text-2xl flex items-center justify-center shadow">+</button>
+                    </div>
+                    <div id="pv-stack-ones" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto bg-white rounded-xl p-2 border border-rose-200 flex flex-wrap flex-row-reverse justify-center items-end gap-1 no-scrollbar"></div>
+                </div>
+            </div>
+
+            <!-- Total Counter & Check -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-lg font-bold">
+                    Current Total: <span id="pv-current-total" class="text-amber-600 font-fredoka text-2xl">0</span>
+                </div>
+                <div id="pv-feedback" class="text-center font-bold text-xl"></div>
+                <div class="flex gap-2">
+                    <button onclick="checkPlaceValue()" class="bg-amber-500 hover:bg-amber-600 text-white font-fredoka px-6 py-3 rounded-xl shadow-lg border-b-4 border-amber-700 text-lg">
+                        Check Answer ✨
+                    </button>
+                    <button onclick="nextPVQuestion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-3 rounded-xl">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. ADDITION WITH CARRY (INDIVIDUAL COLUMN BOXES) -->
+        <section id="sec-addition" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-rose-200">
+            <div class="text-center mb-6">
+                <span class="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 4</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-rose-600 mt-1">Addition with Carryover</h2>
+                <p class="text-slate-500 text-sm">Add each column right-to-left. Fill carry boxes and digit answer boxes!</p>
+            </div>
+
+            <div class="max-w-md mx-auto bg-rose-50/70 rounded-3xl p-6 border-2 border-rose-200 shadow-inner mb-6">
+                <div class="grid grid-cols-5 gap-2 text-center font-fredoka text-slate-500 text-xs mb-2">
+                    <div></div>
+                    <div>Th</div>
+                    <div>H</div>
+                    <div>T</div>
+                    <div>O</div>
+                </div>
+
+                <!-- Carryover Boxes -->
+                <div class="grid grid-cols-5 gap-2 mb-3 items-center">
+                    <div class="text-right text-xs font-bold text-amber-600 uppercase">Carry:</div>
+                    <div><input type="text" maxlength="1" id="carry-th" class="w-full text-center bg-amber-100 border-2 border-amber-300 rounded-lg py-1 font-fredoka text-amber-800 focus:bg-white focus:outline-none" placeholder="0"></div>
+                    <div><input type="text" maxlength="1" id="carry-h" class="w-full text-center bg-amber-100 border-2 border-amber-300 rounded-lg py-1 font-fredoka text-amber-800 focus:bg-white focus:outline-none" placeholder="0"></div>
+                    <div><input type="text" maxlength="1" id="carry-t" class="w-full text-center bg-amber-100 border-2 border-amber-300 rounded-lg py-1 font-fredoka text-amber-800 focus:bg-white focus:outline-none" placeholder="0"></div>
+                    <div><input type="text" maxlength="1" id="carry-o" class="w-full text-center bg-amber-100 border-2 border-amber-300 rounded-lg py-1 font-fredoka text-amber-800 focus:bg-white focus:outline-none" placeholder="0"></div>
+                </div>
+
+                <!-- First Number -->
+                <div class="grid grid-cols-5 gap-2 text-2xl sm:text-3xl font-fredoka text-slate-700 py-1">
+                    <div></div>
+                    <div id="add-num1-th" class="text-center">1</div>
+                    <div id="add-num1-h" class="text-center">4</div>
+                    <div id="add-num1-t" class="text-center">5</div>
+                    <div id="add-num1-o" class="text-center">8</div>
+                </div>
+
+                <!-- Second Number with Plus -->
+                <div class="grid grid-cols-5 gap-2 text-2xl sm:text-3xl font-fredoka text-slate-700 py-1 border-b-4 border-slate-700 mb-4">
+                    <div class="text-rose-500 text-center font-bold">+</div>
+                    <div id="add-num2-th" class="text-center">2</div>
+                    <div id="add-num2-h" class="text-center">7</div>
+                    <div id="add-num2-t" class="text-center">6</div>
+                    <div id="add-num2-o" class="text-center">5</div>
+                </div>
+
+                <!-- Individual Answer Text Boxes Per Column -->
+                <div class="grid grid-cols-5 gap-2">
+                    <div class="text-right text-xs font-bold text-emerald-600 uppercase flex items-center justify-end">Ans:</div>
+                    <div><input type="text" maxlength="1" id="ans-th" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl py-2 text-emerald-600 focus:border-emerald-500 focus:outline-none shadow"></div>
+                    <div><input type="text" maxlength="1" id="ans-h" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl py-2 text-emerald-600 focus:border-emerald-500 focus:outline-none shadow"></div>
+                    <div><input type="text" maxlength="1" id="ans-t" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl py-2 text-emerald-600 focus:border-emerald-500 focus:outline-none shadow"></div>
+                    <div><input type="text" maxlength="1" id="ans-o" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-slate-300 rounded-xl py-2 text-emerald-600 focus:border-emerald-500 focus:outline-none shadow"></div>
+                </div>
+            </div>
+
+            <!-- Actions & Feedback -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <button onclick="nextAdditionQuestion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl">
+                    <i class="fa-solid fa-arrows-rotate"></i> New Question
+                </button>
+                <div id="add-feedback" class="text-center font-bold text-xl"></div>
+                <button onclick="checkAddition()" class="bg-rose-500 hover:bg-rose-600 text-white font-fredoka px-8 py-3 rounded-xl shadow-lg border-b-4 border-rose-700 text-lg">
+                    Check Sum ✨
+                </button>
+            </div>
+        </section>
+
+        <!-- 7. SUBTRACTION WITH BORROW -->
+        <section id="sec-subtraction" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-purple-200">
+            <div class="text-center mb-6">
+                <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 5</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-purple-600 mt-1">Subtraction with Borrowing</h2>
+                <p class="text-slate-500 text-sm">Borrow 1 ten when top digit is smaller than bottom digit!</p>
+            </div>
+
+            <div class="max-w-md mx-auto bg-purple-50/70 rounded-3xl p-6 border-2 border-purple-200 shadow-inner mb-6">
+                <div class="grid grid-cols-4 gap-2 text-center font-fredoka text-slate-500 text-xs mb-2">
+                    <div></div>
+                    <div>H</div>
+                    <div>T</div>
+                    <div>O</div>
+                </div>
+
+                <!-- Borrow Helper Row -->
+                <div class="grid grid-cols-4 gap-2 mb-2 items-center">
+                    <div class="text-right text-xs font-bold text-purple-600 uppercase">Borrow:</div>
+                    <div><input type="text" maxlength="2" id="borrow-h" class="w-full text-center bg-purple-100 border border-purple-300 rounded py-1 font-fredoka text-xs text-purple-800" placeholder="New"></div>
+                    <div><input type="text" maxlength="2" id="borrow-t" class="w-full text-center bg-purple-100 border border-purple-300 rounded py-1 font-fredoka text-xs text-purple-800" placeholder="New"></div>
+                    <div><input type="text" maxlength="2" id="borrow-o" class="w-full text-center bg-purple-100 border border-purple-300 rounded py-1 font-fredoka text-xs text-purple-800" placeholder="+10"></div>
+                </div>
+
+                <!-- Subtraction Numbers -->
+                <div class="grid grid-cols-4 gap-2 text-2xl sm:text-3xl font-fredoka text-slate-700 py-1">
+                    <div></div>
+                    <div id="sub-num1-h" class="text-center">5</div>
+                    <div id="sub-num1-t" class="text-center">3</div>
+                    <div id="sub-num1-o" class="text-center">2</div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 text-2xl sm:text-3xl font-fredoka text-slate-700 py-1 border-b-4 border-slate-700 mb-4">
+                    <div class="text-purple-600 text-center font-bold">-</div>
+                    <div id="sub-num2-h" class="text-center">2</div>
+                    <div id="sub-num2-t" class="text-center">6</div>
+                    <div id="sub-num2-o" class="text-center">7</div>
+                </div>
+
+                <!-- Subtraction Answer Input Columns -->
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="text-right text-xs font-bold text-purple-600 uppercase flex items-center justify-end">Ans:</div>
+                    <div><input type="text" maxlength="1" id="sub-ans-h" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-purple-300 rounded-xl py-2 text-purple-700 shadow"></div>
+                    <div><input type="text" maxlength="1" id="sub-ans-t" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-purple-300 rounded-xl py-2 text-purple-700 shadow"></div>
+                    <div><input type="text" maxlength="1" id="sub-ans-o" class="w-full text-center text-2xl font-fredoka bg-white border-2 border-purple-300 rounded-xl py-2 text-purple-700 shadow"></div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <button onclick="nextSubtractionQuestion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl">
+                    <i class="fa-solid fa-arrows-rotate"></i> New Question
+                </button>
+                <div id="sub-feedback" class="text-center font-bold text-xl"></div>
+                <button onclick="checkSubtraction()" class="bg-purple-600 hover:bg-purple-700 text-white font-fredoka px-8 py-3 rounded-xl shadow-lg border-b-4 border-purple-900 text-lg">
+                    Check Answer ✨
+                </button>
+            </div>
+        </section>
+
+        <!-- 8. MULTIPLICATION MODULE -->
+        <section id="sec-multiplication" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-orange-200">
+            <div class="text-center mb-6">
+                <span class="bg-orange-100 text-orange-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 6</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-orange-600 mt-1">Single Digit Multiplication</h2>
+                <p class="text-slate-500 text-sm">Multiply 1, 2, or 3-digit numbers by a single digit!</p>
+            </div>
+
+            <div class="max-w-md mx-auto bg-orange-50/70 rounded-3xl p-6 border-2 border-orange-200 shadow-inner mb-6 text-center">
+                <div id="mult-problem" class="text-4xl sm:text-6xl font-fredoka text-orange-600 mb-6">
+                    124 × 3 = ?
+                </div>
+
+                <div class="flex items-center justify-center gap-3">
+                    <input type="number" id="mult-input" class="w-48 text-center text-3xl font-fredoka bg-white border-4 border-orange-300 rounded-2xl p-2 focus:outline-none shadow" placeholder="Answer">
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-md mx-auto">
+                <button onclick="nextMultiplicationQuestion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl">
+                    Next Question
+                </button>
+                <div id="mult-feedback" class="text-center font-bold text-xl"></div>
+                <button onclick="checkMultiplication()" class="bg-orange-500 hover:bg-orange-600 text-white font-fredoka px-6 py-2.5 rounded-xl border-b-4 border-orange-700 shadow">
+                    Check Product
+                </button>
+            </div>
+        </section>
+
+        <!-- 9. ASCENDING & DESCENDING ORDER -->
+        <section id="sec-sorting" class="tab-content hidden bg-white rounded-3xl p-4 sm:p-8 shadow-xl border-4 border-teal-200">
+            <div class="text-center mb-6">
+                <span class="bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Math Module 7</span>
+                <h2 class="text-2xl sm:text-3xl font-fredoka text-teal-600 mt-1">Number Staircase Sorting</h2>
+                <p id="sort-instruction" class="text-slate-500 text-sm font-medium">Tap numbers in ASCENDING order (Smallest to Largest)!</p>
+            </div>
+
+            <!-- Sorted Staircase Slots -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-xl mx-auto">
+                <button onclick="resetSort()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl">
+                    Reset
+                </button>
+                <div id="sort-feedback" class="font-bold text-xl text-center"></div>
+                <button onclick="nextSortQuestion()" class="bg-teal-500 hover:bg-teal-600 text-white font-fredoka px-6 py-2.5 rounded-xl border-b-4 border-teal-700 shadow">
+                    Next Set
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTNOTE / FOOTER SECTION -->
+    <footer class="max-w-6xl mx-auto mt-8 mb-4 pt-4 border-t-2 border-slate-300/60 text-center">
+        <p class="text-xs sm:text-sm font-semibold text-slate-600 tracking-wide flex items-center justify-center gap-1.5 flex-wrap">
+            <span>Designed &amp; Created with</span>
+            <i class="fa-solid fa-heart text-rose-500 animate-pulse text-base"></i>
+            <span>by <strong class="font-fredoka text-slate-800 text-sm sm:text-base">Srikantha N</strong> for Young Learners</span>
+        </p>
+    </footer>
+
+    <script>
+        // GLOBAL APP STATE
+        let stars = 0;
+        let activeTab = 'flashcards';
+
+        // 1. Sight Words State
+        const flashWords = ['CAT', 'DOG', 'SUN', 'FROG', 'JUMP', 'STAR', 'HAPPY', 'BOOK', 'APPLE', 'HOUSE', 'RAINBOW', 'BIRD', 'TREE'];
+        let currentWordIndex = 0;
+        let currentWord = flashWords[0];
+
+        // 2. Sentences State
+        const sentencesList = [
+            "The cat sat on the mat",
+            "A frog jumps high",
+            "I see a bright sun",
+            "The red dog runs fast",
+            "We play in the park"
+        ];
+        let currentSentenceObj = { full: "", split: [], user: [] };
+
+        // 3. Froggy State
+        let frogState = { num1: 4, num2: 5, isAddition: true, currentPos: 0, targetPos: 9 };
+
+        // 4. Thousands Reader State
+        let thousandsVal = 4258;
+
+        // 5. Place Value State
+        let pvState = { target: 2435, counts: { thousands: 0, hundreds: 0, tens: 0, ones: 0 } };
+
+        // 6. Carry Addition State
+        let addState = { num1: 1458, num2: 2765 };
+
+        // 7. Subtraction Borrow State
+        let subState = { num1: 532, num2: 267 };
+
+        // 8. Multiplication State
+        let multState = { num1: 124, num2: 3 };
+
+        // 9. Sorting State
+        let sortState = { numbers: [], isAscending: true, userSelection: [] };
+
+        // INITIALIZATION
+        window.onload = function() {
+            initFlashcards();
+            initSentence();
+            initFroggy();
+            initThousands();
+            initPlaceValue();
+            initAddition();
+            initSubtraction();
+            initMultiplication();
+            initSorting();
+        };
+
+        // TAB NAVIGATION LOGIC
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-sky-500', 'bg-indigo-600', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-purple-600', 'bg-orange-500', 'bg-teal-500', 'text-white');
+                el.classList.add('bg-white', 'text-slate-700');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('bg-white', 'text-slate-700');
+            activeBtn.classList.add('text-white');
+
+            if (tabId === 'flashcards') activeBtn.classList.add('bg-sky-500');
+            if (tabId === 'sentences') activeBtn.classList.add('bg-indigo-600');
+            if (tabId === 'froggy') activeBtn.classList.add('bg-emerald-500');
+            if (tabId === 'thousands') activeBtn.classList.add('bg-indigo-600');
+            if (tabId === 'placevalue') activeBtn.classList.add('bg-amber-500');
+            if (tabId === 'addition') activeBtn.classList.add('bg-rose-500');
+            if (tabId === 'subtraction') activeBtn.classList.add('bg-purple-600');
+            if (tabId === 'multiplication') activeBtn.classList.add('bg-orange-500');
+            if (tabId === 'sorting') activeBtn.classList.add('bg-teal-500');
+        }
+
+        function addStar() {
+            stars++;
+            document.getElementById('star-count').innerText = stars;
+            playAudioTone(true);
+        }
+
+        function playAudioTone(success) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                if (success) {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+                    gain.gain.fadeOut(ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } else {
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    gain.gain.fadeOut(ctx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                }
+            } catch(e) {}
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.rate = 0.85;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        // 1. FLASHCARDS
+        function initFlashcards() {
+            currentWord = flashWords[currentWordIndex];
+            document.getElementById('flashcard-word').innerText = currentWord;
+            document.getElementById('flashcards-feedback').innerText = '';
+        }
+
+        function parentVerifyWord(isCorrect) {
+            const fb = document.getElementById('flashcards-feedback');
+            if (isCorrect) {
+                fb.innerHTML = `<span class="text-emerald-600">Great Reading! 🌟 (+1 Star)</span>`;
+                addStar();
+                setTimeout(() => {
+                    currentWordIndex = (currentWordIndex + 1) % flashWords.length;
+                    initFlashcards();
+                }, 1200);
+            } else {
+                fb.innerHTML = `<span class="text-rose-500">Practice makes perfect! Try again! 🗣️</span>`;
+                speakText(currentWord);
+            }
+        }
+
+        // 2. SENTENCES
+        function initSentence() {
+            const full = sentencesList[Math.floor(Math.random() * sentencesList.length)];
+            const split = full.split(' ');
+            const scrambled = [...split].sort(() => Math.random() - 0.5);
+            currentSentenceObj = { full, split, user: [], pool: scrambled };
+            renderSentenceUI();
+            document.getElementById('sentence-feedback').innerText = '';
+        }
+
+        function renderSentenceUI() {
+            const slots = document.getElementById('sentence-slots');
+            slots.innerHTML = '';
+            currentSentenceObj.user.forEach((word, idx) => {
+                const tile = document.createElement('button');
+                tile.className = "bg-indigo-600 text-white font-fredoka px-4 py-2 rounded-xl text-lg shadow animate-pop";
+                tile.innerText = word;
+                tile.onclick = () => removeSentenceWord(idx);
+                slots.appendChild(tile);
+            });
+
+            const pool = document.getElementById('sentence-pool');
+            pool.innerHTML = '';
+            currentSentenceObj.pool.forEach((word, idx) => {
+                const tile = document.createElement('button');
+                tile.className = "bg-white border-2 border-indigo-300 hover:bg-indigo-50 text-indigo-800 font-fredoka px-4 py-2 rounded-xl text-lg shadow transition";
+                tile.innerText = word;
+                tile.onclick = () => addSentenceWord(word, idx);
+                pool.appendChild(tile);
+            });
+        }
+
+        function addSentenceWord(word, index) {
+            currentSentenceObj.user.push(word);
+            currentSentenceObj.pool.splice(index, 1);
+            renderSentenceUI();
+            checkSentenceComplete();
+        }
+
+        function removeSentenceWord(index) {
+            const removed = currentSentenceObj.user.splice(index, 1)[0];
+            currentSentenceObj.pool.push(removed);
+            renderSentenceUI();
+        }
+
+        function speakSentence() {
+            speakText(currentSentenceObj.full);
+        }
+
+        function checkSentenceComplete() {
+            if (currentSentenceObj.user.length === currentSentenceObj.split.length) {
+                const userStr = currentSentenceObj.user.join(' ');
+                const fb = document.getElementById('sentence-feedback');
+                if (userStr === currentSentenceObj.full) {
+                    fb.innerHTML = `<span class="text-emerald-600">Awesome Sentence! 🎉 (+1 Star)</span>`;
+                    addStar();
+                    speakSentence();
+                } else {
+                    fb.innerHTML = `<span class="text-rose-500">Not quite! Try resetting!</span>`;
+                }
+            }
+        }
+
+        function resetSentence() {
+            currentSentenceObj.user = [];
+            currentSentenceObj.pool = [...currentSentenceObj.split].sort(() => Math.random() - 0.5);
+            renderSentenceUI();
+            document.getElementById('sentence-feedback').innerText = '';
+        }
+
+        function nextSentenceQuestion() {
+            initSentence();
+        }
+
+        // 3. FROGGY JUMP
+        function initFroggy() {
+            const sign = frogState.isAddition ? '+' : '-';
+            document.getElementById('frog-equation').innerText = `${frogState.num1} ${sign} ${frogState.num2} = ?`;
+            frogState.targetPos = frogState.isAddition ? (frogState.num1 + frogState.num2) : (frogState.num1 - frogState.num2);
+            frogState.currentPos = 0;
+            renderFroggyLine();
+            document.getElementById('frog-feedback').innerText = '';
+        }
+
+        function renderFroggyLine() {
+            const line = document.getElementById('number-line');
+            line.innerHTML = '';
+            const maxVal = Math.max(15, frogState.targetPos + 2);
+
+            for (let i = 0; i <= maxVal; i++) {
+                const pad = document.createElement('div');
+                pad.className = `flex flex-col items-center cursor-pointer transition-transform hover:scale-110 relative ${i === frogState.currentPos ? 'z-10' : ''}`;
+                pad.onclick = () => jumpFrogTo(i);
+
+                let html = `
+                    <div class="w-11 h-11 rounded-full border-4 border-emerald-400 bg-emerald-200 flex items-center justify-center font-fredoka text-emerald-800 text-base shadow">
+                        ${i}
+                    </div>
+                `;
+
+                if (i === frogState.currentPos) {
+                    html += `<div class="absolute -top-12 animate-bounce text-3xl">🐸</div>`;
+                }
+                pad.innerHTML = html;
+                line.appendChild(pad);
+            }
+        }
+
+        function jumpFrogTo(pos) {
+            frogState.currentPos = pos;
+            renderFroggyLine();
+            const fb = document.getElementById('frog-feedback');
+            if (pos === frogState.targetPos) {
+                fb.innerHTML = `<span class="text-emerald-600">Ribbit! Correct Lilypad! 🎉 (+1 Star)</span>`;
+                addStar();
+            } else {
+                fb.innerHTML = `<span class="text-amber-600">Keep hopping!</span>`;
+            }
+        }
+
+        function resetFrog() {
+            frogState.currentPos = 0;
+            renderFroggyLine();
+            document.getElementById('frog-feedback').innerText = '';
+        }
+
+        function nextFrogQuestion() {
+            const isAdd = Math.random() > 0.4;
+            if (isAdd) {
+                frogState.num1 = Math.floor(Math.random() * 8) + 1;
+                frogState.num2 = Math.floor(Math.random() * 6) + 1;
+            } else {
+                frogState.num1 = Math.floor(Math.random() * 8) + 5;
+                frogState.num2 = Math.floor(Math.random() * frogState.num1);
+            }
+            frogState.isAddition = isAdd;
+            initFroggy();
+        }
+
+        // 4. THOUSANDS READER
+        function initThousands() {
+            updateThousandsUI();
+        }
+
+        function generateRandomThousands() {
+            thousandsVal = Math.floor(Math.random() * 8999) + 1000;
+            updateThousandsUI();
+        }
+
+        function updateThousandsUI() {
+            const str = thousandsVal.toString().padStart(4, '0');
+            document.getElementById('digit-3').innerText = str[0];
+            document.getElementById('digit-2').innerText = str[1];
+            document.getElementById('digit-1').innerText = str[2];
+            document.getElementById('digit-0').innerText = str[3];
+            document.getElementById('thousands-words').innerText = numberToWords(thousandsVal);
+        }
+
+        function speakThousandsNumber() {
+            speakText(numberToWords(thousandsVal));
+        }
+
+        function numberToWords(num) {
+            const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+            const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+            let words = '';
+            const th = Math.floor(num / 1000);
+            const h = Math.floor((num % 1000) / 100);
+            const t = Math.floor((num % 100) / 10);
+            const u = num % 10;
+
+            if (th > 0) words += units[th] + ' thousand ';
+            if (h > 0) words += units[h] + ' hundred ';
+            if (t >= 2) {
+                words += tens[t] + (u > 0 ? '-' + units[u] : '');
+            } else if (t > 0 || u > 0) {
+                words += units[t * 10 + u];
+            }
+            return words.trim();
+        }
+
+        // 5. PLACE VALUE DECOMPOSITION WITH +/- CONTROLS
+        function initPlaceValue() {
+            document.getElementById('pv-target').innerText = pvState.target.toLocaleString();
+            pvState.counts = { thousands: 0, hundreds: 0, tens: 0, ones: 0 };
+            updatePVUI();
+            document.getElementById('pv-feedback').innerText = '';
+        }
+
+        function changePV(unit, delta) {
+            pvState.counts[unit] = Math.max(0, Math.min(9, pvState.counts[unit] + delta));
+            updatePVUI();
+        }
+
+        function updatePVUI() {
+            ['thousands', 'hundreds', 'tens', 'ones'].forEach(u => {
+                document.getElementById(`pv-count-${u}`).innerText = pvState.counts[u];
+                renderPVStack(u, pvState.counts[u]);
+            });
+
+            const currentTotal = (pvState.counts.thousands * 1000) + (pvState.counts.hundreds * 100) + (pvState.counts.tens * 10) + pvState.counts.ones;
+            document.getElementById('pv-current-total').innerText = currentTotal.toLocaleString();
+        }
+
+        function renderPVStack(unit, count) {
+            const stack = document.getElementById(`pv-stack-${unit}`);
+            stack.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const item = document.createElement('div');
+                item.className = 'animate-pop shadow-sm rounded border flex items-center justify-center font-bold text-xs';
+
+                if (unit === 'thousands') {
+                    item.className += ' w-full h-7 bg-amber-400 border-amber-600 text-amber-900';
+                    item.innerText = '🧊 1000 Block';
+                } else if (unit === 'hundreds') {
+                    item.className += ' w-full h-6 bg-sky-300 border-sky-500 text-sky-900';
+                    item.innerText = '🟦 100 Flat';
+                } else if (unit === 'tens') {
+                    item.className += ' w-full h-5 bg-emerald-300 border-emerald-500 text-emerald-900';
+                    item.innerText = '🦯 10 Rod';
+                } else {
+                    item.className += ' w-6 h-6 bg-rose-400 border-rose-600 text-white rounded-md';
+                    item.innerText = '1';
+                }
+                stack.appendChild(item);
+            }
+        }
+
+        function checkPlaceValue() {
+            const currentTotal = (pvState.counts.thousands * 1000) + (pvState.counts.hundreds * 100) + (pvState.counts.tens * 10) + pvState.counts.ones;
+            const fb = document.getElementById('pv-feedback');
+            if (currentTotal === pvState.target) {
+                fb.innerHTML = `<span class="text-emerald-600">Spot On! Perfect Stacks! 🧱 (+1 Star)</span>`;
+                addStar();
+            } else {
+                fb.innerHTML = `<span class="text-rose-500">Adjust the + or - buttons!</span>`;
+            }
+        }
+
+        function nextPVQuestion() {
+            pvState.target = Math.floor(Math.random() * 8999) + 1000;
+            initPlaceValue();
+        }
+
+        // 6. CARRY ADDITION
+        function initAddition() {
+            const n1Str = addState.num1.toString().padStart(4, '0');
+            const n2Str = addState.num2.toString().padStart(4, '0');
+
+            document.getElementById('add-num1-th').innerText = n1Str[0];
+            document.getElementById('add-num1-h').innerText = n1Str[1];
+            document.getElementById('add-num1-t').innerText = n1Str[2];
+            document.getElementById('add-num1-o').innerText = n1Str[3];
+
+            document.getElementById('add-num2-th').innerText = n2Str[0];
+            document.getElementById('add-num2-h').innerText = n2Str[1];
+            document.getElementById('add-num2-t').innerText = n2Str[2];
+            document.getElementById('add-num2-o').innerText = n2Str[3];
+
+            ['carry-th', 'carry-h', 'carry-t', 'carry-o', 'ans-th', 'ans-h', 'ans-t', 'ans-o'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('add-feedback').innerText = '';
+        }
+
+        function checkAddition() {
+            const expectedSum = addState.num1 + addState.num2;
+            const userSumStr = (document.getElementById('ans-th').value || '0') +
+                               (document.getElementById('ans-h').value || '0') +
+                               (document.getElementById('ans-t').value || '0') +
+                               (document.getElementById('ans-o').value || '0');
+            const userSum = parseInt(userSumStr, 10);
+
+            const fb = document.getElementById('add-feedback');
+            if (userSum === expectedSum) {
+                fb.innerHTML = `<span class="text-emerald-600">Brilliant Addition! 🧮 (+1 Star)</span>`;
+                addStar();
+            } else {
+                fb.innerHTML = `<span class="text-rose-500">Check column sums & carries!</span>`;
+            }
+        }
+
+        function nextAdditionQuestion() {
+            addState.num1 = Math.floor(Math.random() * 4500) + 1200;
+            addState.num2 = Math.floor(Math.random() * 4500) + 1200;
+            initAddition();
+        }
+
+        // 7. BORROW SUBTRACTION
+        function initSubtraction() {
+            const n1Str = subState.num1.toString().padStart(3, '0');
+            const n2Str = subState.num2.toString().padStart(3, '0');
+
+            document.getElementById('sub-num1-h').innerText = n1Str[0];
+            document.getElementById('sub-num1-t').innerText = n1Str[1];
+            document.getElementById('sub-num1-o').innerText = n1Str[2];
+
+            document.getElementById('sub-num2-h').innerText = n2Str[0];
+            document.getElementById('sub-num2-t').innerText = n2Str[1];
+            document.getElementById('sub-num2-o').innerText = n2Str[2];
+
+            ['borrow-h', 'borrow-t', 'borrow-o', 'sub-ans-h', 'sub-ans-t', 'sub-ans-o'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('sub-feedback').innerText = '';
+        }
+
+        function checkSubtraction() {
+            const expectedDiff = subState.num1 - subState.num2;
+            const userDiffStr = (document.getElementById('sub-ans-h').value || '0') +
+                                (document.getElementById('sub-ans-t').value || '0') +
+                                (document.getElementById('sub-ans-o').value || '0');
+            const userDiff = parseInt(userDiffStr, 10);
+
+            const fb = document.getElementById('sub-feedback');
+            if (userDiff === expectedDiff) {
+                fb.innerHTML = `<span class="text-emerald-600">Correct Subtraction! ✨ (+1 Star)</span>`;
+                addStar();
+            } else {
+                fb.innerHTML = `<span class="text-rose-500">Check your borrow digits!</span>`;
+            }
+        }
+
+        function nextSubtractionQuestion() {
+            subState.num1 = Math.floor(Math.random() * 500) + 400;
+            subState.num2 = Math.floor(Math.random() * 300) + 100;
+            if (subState.num1 < subState.num2) {
+                const tmp = subState.num1;
+                subState.num1 = subState.num2;
+                subState.num2 = tmp;
+            }
+            initSubtraction();
+        }
+
+        // 8. MULTIPLICATION
+        function initMultiplication() {
+            document.getElementById('mult-problem').innerText = `${multState.num1} × ${multState.num2} = ?`;
+            document.getElementById('mult-input').value = '';
+            document.getElementById('mult-feedback').innerText = '';
+        }
+
+        function checkMultiplication() {
+            const userVal = parseInt(document.getElementById('mult-input').value, 10);
+            const expected = multState.num1 * multState.num2;
+            const fb = document.getElementById('mult-feedback');
+
+            if (userVal === expected) {
+                fb.innerHTML = `<span class="text-emerald-600">Product Correct! 🌟 (+1 Star)</span>`;
+                addStar();
+            } else {
+                fb.innerHTML = `<span class="text-rose-500">Try again!</span>`;
+            }
+        }
+
+        function nextMultiplicationQuestion() {
+            const digits = [1, 2, 3][Math.floor(Math.random() * 3)];
+            if (digits === 1) multState.num1 = Math.floor(Math.random() * 9) + 1;
+            else if (digits === 2) multState.num1 = Math.floor(Math.random() * 90) + 10;
+            else multState.num1 = Math.floor(Math.random() * 900) + 100;
+
+            multState.num2 = Math.floor(Math.random() * 8) + 2;
+            initMultiplication();
+        }
+
+        // 9. SORTING (ASCENDING / DESCENDING)
+        function initSorting() {
+            sortState.isAscending = Math.random() > 0.5;
+            const count = 4;
+            const nums = [];
+            while(nums.length < count) {
+                const r = Math.floor(Math.random() * 900) + 100;
+                if (!nums.includes(r)) nums.push(r);
+            }
+            sortState.numbers = nums;
+            sortState.userSelection = [];
+
+            document.getElementById('sort-instruction').innerText = sortState.isAscending 
+                ? "Tap numbers in ASCENDING order (Smallest to Largest)!" 
+                : "Tap numbers in DESCENDING order (Largest to Smallest)!";
+
+            renderSortUI();
+            document.getElementById('sort-feedback').innerText = '';
+        }
+
+        function renderSortUI() {
+            const slots = document.getElementById('sort-slots');
+            slots.innerHTML = '';
+            sortState.userSelection.forEach((num, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-teal-600 text-white font-fredoka px-4 py-2.5 rounded-2xl text-xl shadow animate-pop";
+                btn.innerText = num;
+                btn.onclick = () => removeSortNum(idx);
+                slots.appendChild(btn);
+            });
+
+            const pool = document.getElementById('sort-pool');
+            pool.innerHTML = '';
+            sortState.numbers.forEach((num) => {
+                if (!sortState.userSelection.includes(num)) {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-white border-2 border-teal-300 hover:bg-teal-50 text-teal-800 font-fredoka px-5 py-3 rounded-2xl text-2xl shadow transition";
+                    btn.innerText = num;
+                    btn.onclick = () => selectSortNum(num);
+                    pool.appendChild(btn);
+                }
+            });
+        }
+
+        function selectSortNum(num) {
+            sortState.userSelection.push(num);
+            renderSortUI();
+            checkSortComplete();
+        }
+
+        function removeSortNum(idx) {
+            sortState.userSelection.splice(idx, 1);
+            renderSortUI();
+        }
+
+        function checkSortComplete() {
+            if (sortState.userSelection.length === sortState.numbers.length) {
+                const sortedTarget = [...sortState.numbers].sort((a, b) => sortState.isAscending ? a - b : b - a);
+                const isCorrect = sortState.userSelection.every((val, index) => val === sortedTarget[index]);
+                const fb = document.getElementById('sort-feedback');
+
+                if (isCorrect) {
+                    fb.innerHTML = `<span class="text-emerald-600">Perfect Staircase! 🪜 (+1 Star)</span>`;
+                    addStar();
+                } else {
+                    fb.innerHTML = `<span class="text-rose-500">Order is not correct yet. Try reset!</span>`;
+                }
+            }
+        }
+
+        function resetSort() {
+            sortState.userSelection = [];
+            renderSortUI();
+            document.getElementById('sort-feedback').innerText = '';
+        }
+
+        function nextSortQuestion() {
+            initSorting();
+        }
+
+        async function generateAIQuestion() {
+            const prompt = `Generate a single kid-friendly math or reading challenge for category "${activeTab}". Return JSON format.`;
+            
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                await response.json();
+            } catch(e) {}
+
+            // Dynamic question trigger per active module
+            if (activeTab === 'flashcards') {
+                currentWordIndex = Math.floor(Math.random() * flashWords.length);
+                initFlashcards();
+            } else if (activeTab === 'sentences') {
+                nextSentenceQuestion();
+            } else if (activeTab === 'froggy') {
+                nextFrogQuestion();
+            } else if (activeTab === 'thousands') {
+                generateRandomThousands();
+            } else if (activeTab === 'placevalue') {
+                nextPVQuestion();
+            } else if (activeTab === 'addition') {
+                nextAdditionQuestion();
+            } else if (activeTab === 'subtraction') {
+                nextSubtractionQuestion();
+            } else if (activeTab === 'multiplication') {
+                nextMultiplicationQuestion();
+            } else if (activeTab === 'sorting') {
+                nextSortQuestion();
+            }
+        }
+    </script>
+</body>
+</html>
+```
